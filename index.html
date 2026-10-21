@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ติดโปร Exam (tidpro-exam) &bull; คลังความรู้ & เทคนิค</title>
+  <!-- Google Fonts: Sarabun (TH Sarabun Web Standard) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <span class="brand-logo">⚡</span>
+        <span class="brand-text">ติดโปร Exam</span>
+      </div>
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="พิมพ์เพื่อค้นหาเทคนิค หรือหัวข้อ...">
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <!-- Intro Hero Section -->
+    <section class="hero-section">
+      <h1 class="hero-title">ติดโปร Exam (tidpro-exam)</h1>
+      <p class="hero-subtitle">คลังรวมเทคนิค ทริคลัด และแนวทางเตรียมตัวสอบแบบโปร</p>
+    </section>
+
+    <!-- Categories / Tags Bar -->
+    <nav class="category-tabs" aria-label="หมวดหมู่ความรู้">
+      <button class="tab-btn active" data-category="all">ทั้งหมด</button>
+      <button class="tab-btn" data-category="general">ทั่วไป</button>
+      <button class="tab-btn" data-category="pc">คอมพิวเตอร์ & Windows</button>
+      <button class="tab-btn" data-category="web">เว็บไซต์ & โค้ด</button>
+    </nav>
+
+    <!-- Knowledge Cards Grid -->
+    <div class="knowledge-grid" id="cardContainer">
+      <!-- Card 1 -->
+      <article class="doc-card" data-category="general">
+        <div class="card-meta">
+          <span class="badge">ทั่วไป</span>
+          <span class="date">บันทึกตั้งต้น</span>
+        </div>
+        <h2 class="card-title">บันทึกแนะนำโครงสร้างคลังความรู้</h2>
+        <p class="card-summary">พื้นที่นี้ถูกออกแบบมาแบบคลีน สบายตา ใช้ฟอนต์ TH Sarabun อ่านง่าย สามารถเพิ่มเนื้อหาหัวข้อใหม่ๆ ได้เรื่อยๆ</p>
+        <div class="card-footer">
+          <span class="read-more">อ่านเนื้อหา &rarr;</span>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="doc-card" data-category="pc">
+        <div class="card-meta">
+          <span class="badge">คอมพิวเตอร์ & Windows</span>
+          <span class="date">ตัวอย่าง</span>
+        </div>
+        <h2 class="card-title">การตั้งค่าและปรับแต่งระบบเบื้องต้น</h2>
+        <p class="card-summary">แนวทางการจดบันทึกคำสั่ง การแก้ไข Registry และการปรับแต่งประสิทธิภาพเครื่องสำหรับงานต่างๆ</p>
+        <div class="card-footer">
+          <span class="read-more">อ่านเนื้อหา &rarr;</span>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="doc-card" data-category="web">
+        <div class="card-meta">
+          <span class="badge">เว็บไซต์ & โค้ด</span>
+          <span class="date">ตัวอย่าง</span>
+        </div>
+        <h2 class="card-title">การอัปเดตเว็บขึ้น GitHub Pages (.github.io)</h2>
+        <p class="card-summary">วิธีการอัปโหลดไฟล์ HTML, CSS, JS ขึ้น GitHub เพื่อให้เปิดดูผ่านอินเทอร์เน็ตได้ฟรีตลอดเวลา</p>
+        <div class="card-footer">
+          <span class="read-more">อ่านเนื้อหา &rarr;</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- Empty State (กรณีค้นหาไม่พบ) -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <p>ไม่พบหัวข้อที่ค้นหา</p>
+    </div>
+  </main>
+
+  <!-- Modal สำหรับอ่านเนื้อหาแบบเต็ม -->
+  <div class="modal" id="docModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <div id="modalBody">
+        <!-- รายละเอียดจะถูกใส่โดย JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; ติดโปร Exam (tidpro-exam) &bull; Hosted on GitHub Pages</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
