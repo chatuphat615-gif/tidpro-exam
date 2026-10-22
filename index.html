@@ -3,240 +3,548 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ติดโปร Exam (tidpro-exam) &bull; คลังข้อสอบเตรียมทหาร ช่างฝีมือทหาร PDF ครบวงจร</title>
-  <meta name="description" content="คลังรวมข้อสอบเก่าและแนวข้อสอบจริง เตรียมทหาร ช่างฝีมือทหาร นายร้อย จปร. พร้อมเฉลยและดาวน์โหลด PDF ฟรี">
-  <!-- Google Fonts: Sarabun & Plus Jakarta Sans -->
+  <title>TIDPRO EXAM &bull; คลังข้อสอบเตรียมทหาร & ช่างฝีมือทหาร (PDF ฟรี)</title>
+  <meta name="description" content="คลังรวบรวมข้อสอบเก่าและแนวข้อสอบจริง โรงเรียนเตรียมทหาร 4 เหล่าทัพ และโรงเรียนช่างฝีมือทหาร ดาวน์โหลด PDF สบายตา">
+  
+  <!-- Site Favicon & Touch Icons with Transparent Background -->
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="assets/site_logo.png">
+
+  <!-- Thai Prompt Typography (Google Fonts) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- Header / Navigation -->
-  <header class="navbar">
-    <div class="nav-container">
-      <div class="brand">
-        <span class="brand-logo">⚡</span>
-        <div>
-          <span class="brand-text">ติดโปร Exam</span>
-          <span class="brand-sub">TIDPRO EXAM VAULT</span>
+<body data-theme="sepia">
+  <!-- Atmospheric Liquid Mesh Glowing Background -->
+  <div class="liquid-mesh-bg" id="liquidMeshBg" aria-hidden="true">
+    <div class="mesh-orb orb-1"></div>
+    <div class="mesh-orb orb-2"></div>
+    <div class="mesh-orb orb-3"></div>
+    <div class="mesh-orb orb-4"></div>
+    <div class="liquid-noise-overlay"></div>
+  </div>
+
+  <!-- Interactive Dynamic Mouse Follower Spotlight (Playful Refraction Sheen) -->
+  <div class="mouse-glow-follower" id="mouseGlowFollower" aria-hidden="true"></div>
+
+  <!-- Top Floating Liquid Glass Navigation Bar -->
+  <header class="reading-nav-header">
+    <div class="nav-shell">
+      <!-- Brand Logo -->
+      <a href="#" class="brand-shell" onclick="resetAllFilters()">
+        <div class="brand-emblem">
+          <img src="assets/site_logo.png" alt="TIDPRO EXAM Logo" class="brand-logo-img">
         </div>
-      </div>
-      
-      <div class="search-wrapper">
-        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" id="searchInput" placeholder="ค้นหา เช่น ช่างฝีมือทหาร, 2562, จปร, ฟิสิกส์, คณิต...">
-        <button id="clearSearch" class="clear-search-btn" title="ล้างคำค้นหา">&times;</button>
-      </div>
+        <div class="brand-info">
+          <span class="brand-name">TIDPRO<span class="brand-subname">EXAM</span></span>
+          <span class="brand-desc">คลังข้อสอบเตรียมทหาร &bull; ช่างฝีมือทหาร</span>
+        </div>
+      </a>
 
-      <div class="nav-actions">
-        <!-- Bookmark drawer button -->
-        <button id="bookmarkDrawerBtn" class="nav-icon-btn" title="ข้อสอบที่บันทึกไว้">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-          <span class="bookmark-badge" id="bookmarkCount">0</span>
+      <!-- Desktop Navigation Wrapper (Silky Smooth Sliding & Scrollable Controls) -->
+      <div class="desktop-nav-wrapper">
+        <button class="nav-scroll-arrow left" id="navScrollLeft" title="เลื่อนดูหมวดหมู่ไปทางซ้าย" aria-label="เลื่อนซ้าย">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
 
-        <!-- Dark/Light Mode Toggle -->
-        <button id="themeToggleBtn" class="nav-icon-btn" title="สลับธีม สว่าง/มืด">
-          <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <nav class="desktop-category-nav" aria-label="หมวดหมู่หลัก" id="desktopNav">
+          <div class="liquid-nav-slider" id="navSlider"></div>
+          <button class="nav-btn active" data-nav-target="home">
+            <span>🏠 หน้าแรกติวเตอร์</span>
+          </button>
+          <button class="nav-btn" data-category="all" data-nav-target="exams">
+            <span>📚 คลังข้อสอบทั้งหมด</span>
+          </button>
+          <button class="nav-btn" data-category="รร.ดัง & เตรียมอุดม" data-nav-target="exams">
+            <span>🏫 รร.ดัง & เตรียมอุดม</span>
+          </button>
+          <button class="nav-btn" data-category="คณิตศาสตร์ (Math)" data-nav-target="exams">
+            <span>📐 คณิต (Math)</span>
+          </button>
+          <button class="nav-btn" data-category="วิทยาศาสตร์ (Science)" data-nav-target="exams">
+            <span>🔬 วิทย์ (Science)</span>
+          </button>
+          <button class="nav-btn" data-category="ภาษาอังกฤษ (English)" data-nav-target="exams">
+            <span>🇬🇧 อังกฤษ (English)</span>
+          </button>
+          <button class="nav-btn" data-category="ภาษาไทย & สังคม" data-nav-target="exams">
+            <span>🇹🇭 ไทย & สังคม</span>
+          </button>
+          <button class="nav-btn" data-category="ช่างฝีมือทหาร" data-nav-target="exams">
+            <span>⚙️ ช่างฝีมือทหาร</span>
+          </button>
+          <button class="nav-btn" data-category="เตรียมทหาร" data-nav-target="exams">
+            <span>🎖️ เตรียมทหาร (4 เหล่า)</span>
+          </button>
+        </nav>
+
+        <button class="nav-scroll-arrow right" id="navScrollRight" title="เลื่อนดูหมวดหมู่ไปทางขวา" aria-label="เลื่อนขวา">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
+      </div>
+
+      <!-- Reading Theme Chooser, Bookmarks & Auth -->
+      <div class="nav-right-actions">
+        <!-- Theme Mode Switcher (Sepia / Paper Light - Eye-Friendly Reading) -->
+        <div class="theme-palette-box" title="เลือกโทนสีการอ่าน">
+          <button class="theme-dot sepia active" data-set-theme="sepia" title="โทนถนอมสายตา (Sepia Warm)"></button>
+          <button class="theme-dot light" data-set-theme="light" title="โทนกระดาษขาว (Paper White)"></button>
+        </div>
+
+        <!-- Bookmark Drawer Button -->
+        <button id="bookmarkDrawerBtn" class="bookmark-top-btn" title="ข้อสอบที่บันทึกไว้">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          <span class="bm-count" id="bookmarkCount">0</span>
+        </button>
+
+        <!-- Auth Login Button (Shown when logged out) -->
+        <button id="loginOpenBtn" class="btn-auth-nav" title="เข้าสู่ระบบ หรือ สมัครสมาชิก">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span class="auth-btn-label">เข้าสู่ระบบ</span>
+        </button>
+
+        <!-- User Profile Pill & Dropdown (Shown when logged in) -->
+        <div class="user-menu-shell" id="userMenuContainer" style="display: none;">
+          <button class="user-pill-btn" id="userPillBtn" title="เมนูบัญชีผู้ใช้งาน">
+            <div class="user-avatar-badge" id="navUserAvatar">ตท</div>
+            <span class="user-pill-name" id="navUserName">ผู้ใช้งาน</span>
+            <svg class="chevron-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="user-dropdown-card" id="userDropdownPanel">
+            <div class="dropdown-header">
+              <div class="user-avatar-badge large" id="dropdownAvatar">ตท</div>
+              <div class="dropdown-user-info">
+                <span class="dropdown-user-name" id="dropdownFullName">ว่าที่ นตท.</span>
+                <span class="dropdown-user-target" id="dropdownTarget">เตรียมทหาร 4 เหล่า</span>
+              </div>
+            </div>
+            <div class="dropdown-sep"></div>
+            <button class="dropdown-action-item" id="menuMyBookmarks">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+              <span>ข้อสอบที่บันทึกไว้</span>
+              <span class="item-count-badge" id="dropdownBmCount">0</span>
+            </button>
+            <button class="dropdown-action-item" id="menuMyHistory">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>ประวัติเปิดอ่านล่าสุด</span>
+              <span class="item-count-badge" id="dropdownHistoryCount">0</span>
+            </button>
+            <div class="dropdown-sep"></div>
+            <button class="dropdown-action-item logout" id="logoutBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <span>ออกจากระบบ</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
   <!-- Main Container -->
-  <main class="container">
-    <!-- Hero Section with Exam Countdown Timer -->
-    <section class="hero-section">
-      <div class="hero-left">
-        <div class="hero-badge">🎓 คลังข้อสอบเพื่อการศึกษา 100% ฟรี</div>
-        <h1 class="hero-title">รวมข้อสอบเตรียมทหาร &bull; ช่างฝีมือทหาร (PDF)</h1>
-        <p class="hero-subtitle">รวบรวมข้อสอบเก่า เฉลยละเอียด และแนวข้อสอบจริง ดาวน์โหลดเร็ว เปิดอ่านทันใจ พร้อมระบบจำลองจับเวลาทำข้อสอบ</p>
-      </div>
+  <main class="page-container">
+    <!-- ======================================================================
+         TUTOR DUO SHOWCASE HERO SECTION (Harvard University 1st Class Honours)
+         ====================================================================== -->
+    <section class="tutor-hero-section reveal-on-scroll" id="homeSection">
+      <div class="tutor-hero-grid">
+        <!-- Left: Harvard Credentials & Tutor Intro -->
+        <div class="tutor-info-col">
+          <h1 class="tutor-hero-heading">
+            ปูเส้นทางสู่นักเรียนเตรียมทหาร & รร.ชั้นนำ <span class="highlight-gradient">เรียนรู้กับสองติวเตอร์ระดับท็อป</span>
+          </h1>
 
-      <!-- Live Exam Countdown Card -->
-      <div class="exam-countdown-card">
-        <div class="countdown-header">
-          <span class="pulse-dot"></span>
-          <span>นับถอยหลังสู่การสอบเตรียมทหาร &bull; ช่างฝีมือทหาร ประจำปี</span>
+          <p class="tutor-hero-subheading">
+            บทพิสูจน์ความสำเร็จด้วยการเรียนรู้ที่แม่นยำ ถ่ายทอดความรู้และแนวข้อสอบจริงโดยตรงจากพวกเรา ผู้สำเร็จการศึกษาจาก <strong>Harvard University เกียรตินิยมอันดับ 1 (First Class Honours)</strong> คัดสรรแนวข้อสอบเสมือนจริง วิเคราะห์จุดออกบ่อย พร้อมเทคนิค Speed Test เพื่อให้น้องๆ สอบติดในรอบเดียว
+          </p>
+
+          <!-- Tutor Duo Profile Mini-Cards -->
+          <div class="tutor-duo-cards">
+            <div class="tutor-mini-card">
+              <div class="tutor-card-badge">Tutor & Founder</div>
+              <h3 class="tutor-name">พี่เบน (Ben)</h3>
+              <p class="tutor-degree">🎓 Harvard University (เกียรตินิยมอันดับ 1)</p>
+              <p class="tutor-bio">เชี่ยวชาญคณิตศาสตร์ขั้นสูง ตรรกศาสตร์ & เทคนิคแก้โจทย์สอบเข้าโรงเรียนเตรียมทหารและโรงเรียนชื่อดัง</p>
+            </div>
+
+            <div class="tutor-mini-card">
+              <div class="tutor-card-badge">Lead Tutor & Co-Founder</div>
+              <h3 class="tutor-name">พี่พอตเตอร์ (Potter)</h3>
+              <p class="tutor-degree">🎓 Harvard University (เกียรตินิยมอันดับ 1)</p>
+              <p class="tutor-bio">เชี่ยวชาญฟิสิกส์ วิทยาศาสตร์ประยุกต์ & ความถนัดช่างฝีมือทหาร (MTTS) วิเคราะห์เจาะลึกข้อสอบทุกปี</p>
+            </div>
+          </div>
+
+          <!-- Highlight Statistics Strip -->
+          <div class="tutor-stats-strip">
+            <div class="stat-pill-box">
+              <span class="stat-num">อันดับ 1</span>
+              <span class="stat-lbl">เกียรตินิยม Harvard</span>
+            </div>
+            <div class="stat-pill-box">
+              <span class="stat-num">150+</span>
+              <span class="stat-lbl">ชุดข้อสอบพร้อมเฉลย</span>
+            </div>
+            <div class="stat-pill-box">
+              <span class="stat-num">100%</span>
+              <span class="stat-lbl">ฟรีเพื่อการศึกษา</span>
+            </div>
+          </div>
+
+          <!-- Action CTA Row -->
+          <div class="tutor-cta-row">
+            <button class="btn-goto-exams" id="btnExploreExams">
+              <span>เลือกดูคลังข้อสอบ PDF ฟรี &darr;</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+            <a href="#tutorStory" class="btn-read-creds">
+              <span>ประวัติและแรงบันดาลใจ &darr;</span>
+            </a>
+          </div>
         </div>
-        <div class="timer-grid">
-          <div class="timer-box">
-            <span class="timer-val" id="cdDays">--</span>
-            <span class="timer-lbl">วัน</span>
-          </div>
-          <div class="timer-box">
-            <span class="timer-val" id="cdHours">--</span>
-            <span class="timer-lbl">ชั่วโมง</span>
-          </div>
-          <div class="timer-box">
-            <span class="timer-val" id="cdMins">--</span>
-            <span class="timer-lbl">นาที</span>
-          </div>
-          <div class="timer-box">
-            <span class="timer-val" id="cdSecs">--</span>
-            <span class="timer-lbl">วินาที</span>
+
+        <!-- Right: Duo Tutors Standing Side-by-Side (Transparent PNGs) -->
+        <div class="tutor-visual-col">
+          <div class="tutor-stage-podium">
+            <!-- Ambient Backlight Glow -->
+            <div class="tutor-backlight-aurora"></div>
+
+            <!-- Side by Side Tutors -->
+            <div class="tutor-images-wrap">
+              <div class="tutor-figure figure-left">
+                <img src="assets/tutor_user.png" alt="ติวเตอร์พี่เบน Harvard University เกียรตินิยมอันดับ 1" class="tutor-img">
+                <div class="tutor-name-pill">พี่เบน &bull; Harvard Honours</div>
+              </div>
+              <div class="tutor-figure figure-right">
+                <img src="assets/tutor_friend.png" alt="ติวเตอร์พี่พอตเตอร์ Harvard University เกียรตินิยมอันดับ 1" class="tutor-img">
+                <div class="tutor-name-pill">พี่พอตเตอร์ &bull; Harvard Honours</div>
+              </div>
+            </div>
+
+            <!-- Floating Credential Badges (Flanking Top Corners without Overlap) -->
+            <div class="floating-stat-card badge-top-left">
+              <span class="badge-icon">🎖️</span>
+              <div>
+                <strong>เตรียมทหาร & รร.ดัง</strong>
+                <small>คลังข้อสอบจริงพร้อมเฉลย</small>
+              </div>
+            </div>
+
+            <div class="floating-stat-card badge-top-right">
+              <span class="badge-icon">🎓</span>
+              <div>
+                <strong>Harvard University</strong>
+                <small>เกียรตินิยมอันดับ 1</small>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Stat Dashboard Strip -->
-    <section class="stats-strip">
-      <div class="stat-card">
-        <span class="stat-num" id="statTotalExams">40+</span>
-        <span class="stat-desc">ชุดข้อสอบทั้งหมด</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num">2530 - 2563</span>
-        <span class="stat-desc">ครอบคลุมระยะเวลากว่า 30 ปี</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num">100%</span>
-        <span class="stat-desc">เข้าถึงไฟล์ PDF ได้ฟรี</span>
-      </div>
-      <div class="stat-card highlight-stat" id="openTimerToolBtn" style="cursor: pointer;">
-        <span class="stat-num">⏱️ ตัวจับเวลา</span>
-        <span class="stat-desc">เปิดนาฬิกาฝึกจับเวลาทำโจทย์</span>
+    <!-- Tutor Story & Mission Section -->
+    <section class="tutor-story-section reveal-on-scroll" id="tutorStory">
+      <div class="story-card-glass">
+        <div class="story-badge">เกี่ยวกับสองติวเตอร์</div>
+        <h2>ความตั้งใจของเรา: มอบคลังความรู้ระดับโลก เพื่อเยาวชนไทยทุกคน</h2>
+        <p>
+          "พวกเราทั้งสองคนผ่านเส้นทางการศึกษาที่เข้มข้นจนสำเร็จการศึกษาจาก <strong>Harvard University ด้วยเกียรตินิยมอันดับ 1</strong> เราเชื่อมั่นอย่างยิ่งว่าการเตรียมตัวสอบเข้าโรงเรียนเตรียมทหาร โรงเรียนช่างฝีมือทหาร และโรงเรียนมัธยมชื่อดัง ไม่ใช่แค่การท่องจำสูตร แต่คือการฝึกทักษะการคิดวิเคราะห์ ความเร็ว และความแม่นยำอย่างเป็นระบบ"
+        </p>
+        <p>
+          "เราจึงร่วมมือกันก่อตั้ง TIDPRO EXAM เพื่อรวบรวมข้อสอบเก่า ฉบับจริง และแบบฝึกหัดข้อสอบทุกเรื่องทุกวิชา ทั้งคณิตศาสตร์ วิทยาศาสตร์ ภาษาอังกฤษ ภาษาไทยและสังคมศึกษา พร้อมเฉลยละเอียด แปลงเป็นไฟล์ PDF คุณภาพสูง สบายตา ให้นักเรียนทั่วประเทศสามารถดาวน์โหลดและฝึกทำได้ฟรี โดยไม่มีค่าใช้จ่ายใดๆ ทั้งสิ้น"
+        </p>
+        <div class="story-sign-row">
+          <div class="signature-tag">พี่เบน &bull; Harvard 1st Class Honours</div>
+          <div class="signature-tag">พี่พอตเตอร์ &bull; Harvard 1st Class Honours</div>
+        </div>
       </div>
     </section>
 
-    <!-- Credit Banner -->
-    <div class="credit-banner">
-      <span class="credit-icon">🎖️</span>
-      <div>
-        <strong>ขอขอบคุณและให้เกียรติเครดิตแก่แหล่งข้อมูลต้นฉบับ:</strong> 
-        <a href="https://cadetexam.blogspot.com/" target="_blank" rel="noopener noreferrer">CadetExam Blogspot (รวมข้อสอบเตรียมทหาร นายสิบ นายร้อย ช่างฝีมือทหาร)</a>
-        <p class="credit-sub">เนื้อหาทั้งหมดถูกรวบรวมเพื่อส่งเสริมการศึกษาและอนาคตของเยาวชนไทย โดยไม่มีค่าใช้จ่ายและไม่มีผลประโยชน์เชิงพาณิชย์</p>
+    <!-- ======================================================================
+         EXAMS CATALOG SECTION
+         ====================================================================== -->
+    <section class="exam-catalog-section reveal-on-scroll" id="examsSection">
+      <!-- Clean Reading Header & Credit -->
+      <div class="reading-hero-strip">
+        <div class="hero-text-block">
+          <div class="study-pill">📚 ศูนย์รวมเอกสารเพื่อการศึกษาและเตรียมตัวสอบ</div>
+          <h2 class="hero-title">คลังข้อสอบเก่า & แนวข้อสอบจริง (PDF)</h2>
+          <p class="hero-description">รวบรวมไฟล์ข้อสอบโรงเรียนเตรียมทหาร 4 เหล่าทัพ และโรงเรียนช่างฝีมือทหาร แยกปีและรายวิชาอย่างเป็นระเบียบ เปิดอ่านสบายตาในคลิกเดียว</p>
+        </div>
+
+        <!-- Search Box (Integrated with Clear Button) -->
+        <div class="search-bar-shell">
+          <svg class="search-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="ค้นหาข้อสอบ เช่น ช่างฝีมือทหาร 2554, จปร 2562, ฟิสิกส์, คณิตศาสตร์...">
+          <button id="clearSearch" class="clear-btn">&times;</button>
+        </div>
+
+        <!-- Credit Banner -->
+        <div class="reading-credit-box">
+          <span class="credit-badge">ที่มา & เครดิต</span>
+          <p>ขอขอบคุณแหล่งข้อมูลต้นฉบับจาก <a href="https://cadetexam.blogspot.com/" target="_blank" rel="noopener noreferrer">CadetExam Blogspot (คลังข้อสอบเตรียมทหาร นายร้อย ช่างฝีมือทหาร)</a> จัดทำขึ้นเพื่อประโยชน์ทางการศึกษาแก่เยาวชนไทยโดยไม่มีค่าใช้จ่าย</p>
+        </div>
       </div>
-    </div>
 
-    <!-- Controls Bar (Categories Tabs + Subject Filter + Year Sort) -->
-    <div class="controls-bar">
-      <!-- Main Category Tabs -->
-      <nav class="category-tabs" aria-label="หมวดหมู่ข้อสอบ">
-        <button class="tab-btn active" data-category="all">ทั้งหมด (<span id="countAll">0</span>)</button>
-        <button class="tab-btn" data-category="ช่างฝีมือทหาร">ช่างฝีมือทหาร MTTS</button>
-        <button class="tab-btn" data-category="เตรียมทหาร">เตรียมทหาร AFAPS</button>
-        <button class="tab-btn" data-category="นายร้อย & จปร.">นายร้อย จปร. & นายร้อยตำรวจ</button>
-      </nav>
+    <!-- Sub-Filter Controls (Subject & Year Sort) -->
+    <section class="reading-controls-bar">
+      <!-- Mobile Category Chips (Horizontal Scroll) -->
+      <div class="mobile-chip-scroll">
+        <button class="chip active" data-category="all">ทั้งหมด (<span id="countAll">0</span>)</button>
+        <button class="chip" data-category="รร.ดัง & เตรียมอุดม">🏫 รร.ดัง & เตรียมอุดม</button>
+        <button class="chip" data-category="คณิตศาสตร์ (Math)">📐 คณิต (Math)</button>
+        <button class="chip" data-category="วิทยาศาสตร์ (Science)">🔬 วิทย์ (Science)</button>
+        <button class="chip" data-category="ภาษาอังกฤษ (English)">🇬🇧 อังกฤษ (English)</button>
+        <button class="chip" data-category="ภาษาไทย & สังคม">🇹🇭 ไทย & สังคม</button>
+        <button class="chip" data-category="ช่างฝีมือทหาร">⚙️ ช่างฝีมือทหาร</button>
+        <button class="chip" data-category="เตรียมทหาร">🎖️ เตรียมทหาร</button>
+      </div>
 
-      <!-- Advanced Filters Group -->
-      <div class="filter-group">
-        <!-- Subject Filter Dropdown -->
-        <div class="select-wrapper">
-          <label for="subjectSelect">วิชา:</label>
-          <select id="subjectSelect" class="filter-dropdown">
-            <option value="all">ทุกวิชา</option>
-            <option value="คณิต">คณิตศาสตร์</option>
-            <option value="วิทย์">วิทยาศาสตร์ / ฟิสิกส์ / เคมี</option>
-            <option value="อังกฤษ">ภาษาอังกฤษ</option>
-            <option value="ไทย">ภาษาไทย / สังคม</option>
-            <option value="ครบทุกวิชา">รวมครบทุกวิชา</option>
+      <div class="filter-dropdown-group">
+        <!-- Subject Filter -->
+        <div class="select-box">
+          <label for="subjectSelect">หมวดวิชา:</label>
+          <select id="subjectSelect" class="styled-select">
+            <option value="all">ทุกหมวดวิชา</option>
+            <option value="คณิต">คณิตศาสตร์ (Math - ทุกเรื่อง)</option>
+            <option value="วิทย์">วิทยาศาสตร์ (Science - ฟิสิกส์/เคมี/ชีวะ)</option>
+            <option value="อังกฤษ">ภาษาอังกฤษ (English - ไวยากรณ์/Reading)</option>
+            <option value="ไทย">ภาษาไทย (หลักภาษา/วรรณคดี)</option>
+            <option value="สังคม">สังคมศึกษา (ประวัติศาสตร์/หน้าที่พลเมือง)</option>
+            <option value="ครบทุกวิชา">รวมครบทุกวิชา (Full Exam)</option>
           </select>
         </div>
 
-        <!-- Year Sort Dropdown -->
-        <div class="select-wrapper">
-          <label for="sortSelect">เรียงตามปี:</label>
-          <select id="sortSelect" class="filter-dropdown">
+        <!-- Year Sort -->
+        <div class="select-box">
+          <label for="sortSelect">เรียงลำดับปี:</label>
+          <select id="sortSelect" class="styled-select">
             <option value="year-desc">ปีล่าสุด &rarr; เก่าสุด (2563 - 2530)</option>
             <option value="year-asc">ปีเก่าสุด &rarr; ล่าสุด (2530 - 2563)</option>
           </select>
         </div>
       </div>
+    </section>
+
+    <!-- Active Search Query Indicator -->
+    <div class="query-indicator-bar" id="filterIndicator" style="display: none;">
+      <span>กำลังแสดงผลสำหรับ: <strong id="filterQueryText"></strong></span>
+      <button id="resetFiltersBtn" class="reset-link">ล้างตัวกรองทั้งหมด</button>
     </div>
 
-    <!-- Active Filter Chips Indicator -->
-    <div class="active-filter-indicator" id="filterIndicator" style="display: none;">
-      <span>ผลการค้นหาสำหรับ: <strong id="filterQueryText"></strong></span>
-      <button id="resetFiltersBtn" class="reset-filter-btn">ล้างตัวกรองทั้งหมด</button>
-    </div>
-
-    <!-- Knowledge Cards Grid -->
-    <div class="knowledge-grid" id="cardContainer">
+    <!-- Exam Cards Catalog Grid (Clean Study Book Style) -->
+    <div class="exam-grid" id="cardContainer">
       <!-- Cards rendered via app.js -->
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" id="emptyState" style="display: none;">
-      <div class="empty-icon">📂</div>
-      <h3>ไม่พบข้อสอบที่ตรงกับเงื่อนไขการค้นหา</h3>
+    <div class="empty-reading-state" id="emptyState" style="display: none;">
+      <div class="empty-icon">📖</div>
+      <h3>ไม่พบข้อสอบที่ตรงกับคำค้นหา</h3>
       <p>ลองปรับคำค้นหา หรือเลือกหมวดหมู่อื่นดูนะครับ</p>
-      <button class="btn-primary" onclick="resetAllFilters()">รีเซ็ตตัวกรอง</button>
+      <button class="btn-reset-filters" onclick="resetAllFilters()">ดูข้อสอบทั้งหมด</button>
     </div>
+    </section>
   </main>
 
   <!-- PDF Preview Modal -->
   <div class="modal" id="docModal">
-    <div class="modal-content">
+    <div class="modal-box">
       <div class="modal-header">
-        <div>
+        <div class="modal-title-info">
           <h3 id="modalTitle">ดูตัวอย่างข้อสอบ PDF</h3>
-          <span class="modal-subtitle" id="modalSubtitle">ตัวอย่างเอกสารจาก Google Drive</span>
+          <span class="modal-sub" id="modalSubtitle">พรีวิวเอกสารความคมชัดสูงผ่าน Google Drive</span>
         </div>
-        <div class="modal-controls">
-          <a id="modalDirectLink" href="#" target="_blank" rel="noopener noreferrer" class="btn-sm-open" title="เปิดหน้าต่างใหม่เต็มจอ">
-            <span>เปิดเต็มจอ</span>
+        <div class="modal-actions">
+          <a id="modalDirectLink" href="#" target="_blank" rel="noopener noreferrer" class="btn-open-external">
+            <span>เปิดหน้าต่างใหม่</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
           </a>
-          <button class="modal-close" id="modalClose" title="ปิดหน้าต่าง">&times;</button>
+          <button class="modal-close-btn" id="modalClose">&times;</button>
         </div>
       </div>
-      <div id="modalBody" class="modal-body-container">
-        <!-- iframe rendered via app.js -->
+      <div id="modalBody" class="modal-iframe-shell">
+        <!-- iframe rendered here -->
       </div>
     </div>
   </div>
 
-  <!-- Bookmarks Drawer Sidebar -->
-  <aside class="bookmark-drawer" id="bookmarkDrawer">
+  <!-- Auth Modal (Login / Register) -->
+  <div class="modal auth-modal" id="authModal">
+    <div class="modal-box auth-box">
+      <div class="auth-modal-header">
+        <div class="auth-modal-brand">
+          <span class="auth-brand-icon">📖</span>
+          <div>
+            <h3 id="authModalHeading">เข้าสู่ระบบ TIDPRO EXAM</h3>
+            <p id="authModalSubheading">บันทึกข้อสอบโปรด และเก็บสถิติการทบทวนส่วนตัว</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="authModalClose">&times;</button>
+      </div>
+
+      <!-- Auth Tabs Switcher (Liquid Glass Bar) -->
+      <div class="auth-tabs-bar" id="authTabsBar">
+        <div class="liquid-auth-slider" id="authTabSlider"></div>
+        <button class="auth-tab-btn active" id="tabLoginBtn" type="button">เข้าสู่ระบบ</button>
+        <button class="auth-tab-btn" id="tabRegisterBtn" type="button">สมัครสมาชิกใหม่</button>
+      </div>
+
+      <!-- Tab 1: Login Form -->
+      <form id="loginForm" class="auth-form-card active">
+        <div class="form-field">
+          <label for="loginUsername">ชื่อผู้ใช้ (Username) หรืออีเมล</label>
+          <div class="input-shell">
+            <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <input type="text" id="loginUsername" placeholder="เช่น cadet หรือ student@exam.com" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <div class="field-top-row">
+            <label for="loginPassword">รหัสผ่าน</label>
+            <span class="field-hint">กดปุ่มตาเพื่อดูรหัสผ่าน</span>
+          </div>
+          <div class="input-shell">
+            <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="password" id="loginPassword" placeholder="กรอกรหัสผ่านของคุณ" required autocomplete="current-password">
+            <button type="button" class="btn-toggle-pwd" id="toggleLoginPwd" title="ดูรหัสผ่าน">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-inline-options">
+          <label class="remember-label">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>จดจำการเข้าสู่ระบบในเครื่องนี้</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit-auth">
+          <span>เข้าสู่ระบบคลังข้อสอบ</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+
+        <div class="auth-divider-line">
+          <span>หรือเข้าสู่ระบบด่วน 1 คลิกด้วยบัญชีทดลอง</span>
+        </div>
+
+        <div class="quick-demo-grid">
+          <button type="button" class="btn-demo-pill" data-demo="cadet">
+            <span class="pill-badge">🎖️ ตท.</span>
+            <div class="demo-text">
+              <strong>น้องเตรียมทหาร</strong>
+              <small>user: cadet | pass: 1234</small>
+            </div>
+          </button>
+          <button type="button" class="btn-demo-pill" data-demo="mtts">
+            <span class="pill-badge">⚙️ ช่าง</span>
+            <div class="demo-text">
+              <strong>น้องช่างฝีมือทหาร</strong>
+              <small>user: mtts | pass: 1234</small>
+            </div>
+          </button>
+        </div>
+      </form>
+
+      <!-- Tab 2: Register Form -->
+      <form id="registerForm" class="auth-form-card">
+        <div class="form-field">
+          <label for="regFullName">ชื่อ-นามสกุล หรือชื่อเล่น</label>
+          <div class="input-shell">
+            <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <input type="text" id="regFullName" placeholder="เช่น น้องภัทร (เตรียมทหาร 65)" required>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="regUsername">ชื่อผู้ใช้ (Username ภาษาอังกฤษ)</label>
+          <div class="input-shell">
+            <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path></svg>
+            <input type="text" id="regUsername" placeholder="เช่น cadet_phat" pattern="[A-Za-z0-9_]{3,20}" title="ตัวอักษรภาษาอังกฤษ ตัวเลข หรือขีดล่าง 3-20 ตัวอักษร" required>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="regTarget">เป้าหมายการสอบหลัก</label>
+          <select id="regTarget" class="styled-select" style="width: 100%;">
+            <option value="โรงเรียนเตรียมทหาร (4 เหล่าทัพ)">โรงเรียนเตรียมทหาร (4 เหล่าทัพ ทบ./ทร./ทอ./ตร.)</option>
+            <option value="โรงเรียนช่างฝีมือทหาร (MTTS)">โรงเรียนช่างฝีมือทหาร (MTTS ภาคปกติ/สมทบ)</option>
+            <option value="นายร้อย จปร.">โรงเรียนนายร้อยพระจุลจอมเกล้า (จปร.)</option>
+            <option value="นายร้อยตำรวจ (นรต.)">โรงเรียนนายร้อยตำรวจ (นรต.)</option>
+            <option value="นักเรียนมัธยมทั่วไป">ทั่วไป / เสริมสร้างความรู้เพื่อสอบเข้า ม.4</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <div class="field-top-row">
+            <label for="regPassword">รหัสผ่าน</label>
+            <span class="field-hint">อย่างน้อย 4 ตัวอักษร</span>
+          </div>
+          <div class="input-shell">
+            <svg class="field-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="password" id="regPassword" placeholder="กำหนดรหัสผ่านเพื่อเข้าใช้งาน" minlength="4" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit-auth">
+          <span>สมัครสมาชิกและเริ่มใช้งานทันที</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bookmark Drawer Sidebar -->
+  <aside class="drawer-panel" id="bookmarkDrawer">
     <div class="drawer-header">
       <div class="drawer-title">
         <span>⭐ ข้อสอบที่บันทึกไว้</span>
         <span class="drawer-badge" id="drawerBadge">0</span>
       </div>
-      <button class="drawer-close" id="drawerClose">&times;</button>
+      <button class="drawer-close-btn" id="drawerClose">&times;</button>
     </div>
     <div class="drawer-body" id="bookmarkList">
       <!-- Saved items rendered here -->
     </div>
   </aside>
-  <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-  <!-- Floating Stopwatch / Practice Timer Widget -->
-  <div class="timer-widget" id="timerWidget">
-    <div class="timer-widget-header">
-      <span>⏱️ นาฬิกาฝึกทำข้อสอบ</span>
-      <button class="timer-min-btn" id="timerMinBtn" title="พับเก็บ">−</button>
-    </div>
-    <div class="timer-widget-body" id="timerBody">
-      <div class="timer-display" id="stopwatchDisplay">00:00:00</div>
-      <div class="timer-ctrl-btns">
-        <button class="t-btn t-btn-start" id="startTimerBtn">เริ่ม</button>
-        <button class="t-btn t-btn-pause" id="pauseTimerBtn">หยุด</button>
-        <button class="t-btn t-btn-reset" id="resetTimerBtn">รีเซ็ต</button>
+  <!-- Reading History Drawer Sidebar -->
+  <aside class="drawer-panel" id="historyDrawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <span>📖 ประวัติการเปิดอ่านข้อสอบ</span>
+        <span class="drawer-badge" id="historyBadge">0</span>
       </div>
+      <button class="drawer-close-btn" id="historyClose">&times;</button>
     </div>
-  </div>
+    <div class="drawer-body" id="historyList">
+      <!-- History items rendered here -->
+    </div>
+    <div class="drawer-footer-bar">
+      <button id="clearHistoryBtn" class="btn-clear-history">ล้างประวัติการอ่านทั้งหมด</button>
+    </div>
+  </aside>
+
+  <div class="drawer-overlay" id="drawerBackdrop"></div>
 
   <!-- Toast Notification -->
-  <div class="toast-notify" id="toastNotify">บันทึกข้อสอบสำเร็จ</div>
+  <div class="reading-toast" id="toastNotify">บันทึกเรียบร้อย</div>
 
   <!-- Footer -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="brand-logo">⚡</span>
-        <strong>ติดโปร Exam (tidpro-exam)</strong>
-        <p>แหล่งคลังความรู้และรวมแนวข้อสอบเพื่อการศึกษา</p>
+  <footer class="reading-footer">
+    <div class="footer-shell">
+      <div class="footer-brand-col">
+        <strong>TIDPRO EXAM &bull; ติดโปร Exam</strong>
+        <p>คลังความรู้และแนวข้อสอบเตรียมทหาร เพื่อส่งเสริมการเรียนรู้ของนักเรียนไทย</p>
       </div>
-      <div class="footer-links">
-        <span>อ้างอิงและให้เครดิต: <a href="https://cadetexam.blogspot.com" target="_blank" rel="noopener noreferrer">CadetExam</a></span>
-        <span>&bull;</span>
-        <span>ระบบโฮสต์ความเร็วสูงบน Cloudflare Pages</span>
+      <div class="footer-credit-col">
+        <span>อ้างอิงและขอบคุณ: <a href="https://cadetexam.blogspot.com" target="_blank" rel="noopener noreferrer">CadetExam</a></span>
+        <p class="copyright">&copy; 2026 TIDPRO EXAM &bull; โฮสต์บน Cloudflare Pages</p>
       </div>
-      <p class="copyright">&copy; 2026 ติดโปร Exam &bull; สำหรับฝึกฝนและเตรียมสอบของนักเรียนทุกคน สู้ๆ ครับ!</p>
     </div>
   </footer>
 
