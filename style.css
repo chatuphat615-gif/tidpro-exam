@@ -150,15 +150,39 @@ body {
 
 /* Scroll-Driven Reveal & Smooth Float-Up Animation */
 .reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(35px);
-  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.reveal-on-scroll.revealed {
-  opacity: 1;
-  transform: translateY(0);
+@media (min-width: 769px) {
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+  }
+
+  .reveal-on-scroll.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exam-catalog-section {
+  position: relative;
+  width: 100%;
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+  scroll-margin-top: 80px;
+}
+
+#mobileQuickCategories {
+  scroll-margin-top: 80px;
+}
+
+#cardContainer {
+  scroll-margin-top: 80px;
 }
 
 /* --------------------------------------------------------------------------

@@ -319,7 +319,7 @@
     <!-- ======================================================================
          EXAMS CATALOG SECTION
          ====================================================================== -->
-    <section class="exam-catalog-section reveal-on-scroll" id="examsSection">
+    <section class="exam-catalog-section" id="examsSection">
       <!-- Clean Reading Header & Credit -->
       <div class="reading-hero-strip">
         <div class="hero-text-block">
@@ -352,56 +352,56 @@
           <span class="quick-cat-hint">แตะเพื่อดูข้อสอบ</span>
         </div>
         <div class="quick-cat-grid">
-          <button class="quick-cat-btn" data-category="เตรียมทหาร" onclick="setCategory('เตรียมทหาร')">
+          <button class="quick-cat-btn" data-category="เตรียมทหาร" onclick="setCategory('เตรียมทหาร', true, 'cardContainer')">
             <span class="qcat-icon">🎖️</span>
             <div class="qcat-text">
               <span class="qcat-name">เตรียมทหาร 4 เหล่า</span>
               <span class="qcat-sub">จปร. / นายเรือ / ทอ. / ตร.</span>
             </div>
           </button>
-          <button class="quick-cat-btn" data-category="ช่างฝีมือทหาร" onclick="setCategory('ช่างฝีมือทหาร')">
+          <button class="quick-cat-btn" data-category="ช่างฝีมือทหาร" onclick="setCategory('ช่างฝีมือทหาร', true, 'cardContainer')">
             <span class="qcat-icon">⚙️</span>
             <div class="qcat-text">
               <span class="qcat-name">ช่างฝีมือทหาร</span>
               <span class="qcat-sub">MTTS ภาคปกติ / สมทบ</span>
             </div>
           </button>
-          <button class="quick-cat-btn" data-category="รร.ดัง & เตรียมอุดม" onclick="setCategory('รร.ดัง & เตรียมอุดม')">
+          <button class="quick-cat-btn" data-category="รร.ดัง & เตรียมอุดม" onclick="setCategory('รร.ดัง & เตรียมอุดม', true, 'cardContainer')">
             <span class="qcat-icon">🏫</span>
             <div class="qcat-text">
               <span class="qcat-name">รร.ดัง & เตรียมอุดม</span>
               <span class="qcat-sub">เตรียมอุดม / KVIS / MWIT</span>
             </div>
           </button>
-          <button class="quick-cat-btn" data-category="คณิตศาสตร์ (Math)" onclick="setCategory('คณิตศาสตร์ (Math)')">
+          <button class="quick-cat-btn" data-category="คณิตศาสตร์ (Math)" onclick="setCategory('คณิตศาสตร์ (Math)', true, 'cardContainer')">
             <span class="qcat-icon">📐</span>
             <div class="qcat-text">
               <span class="qcat-name">คณิต (Math)</span>
               <span class="qcat-sub">คำนวณ & ตรรกศาสตร์</span>
             </div>
           </button>
-          <button class="quick-cat-btn" data-category="วิทยาศาสตร์ (Science)" onclick="setCategory('วิทยาศาสตร์ (Science)')">
+          <button class="quick-cat-btn" data-category="วิทยาศาสตร์ (Science)" onclick="setCategory('วิทยาศาสตร์ (Science)', true, 'cardContainer')">
             <span class="qcat-icon">🔬</span>
             <div class="qcat-text">
               <span class="qcat-name">วิทย์ (Science)</span>
               <span class="qcat-sub">ฟิสิกส์ / เคมี / ชีวะ</span>
             </div>
           </button>
-          <button class="quick-cat-btn" data-category="ภาษาอังกฤษ (English)" onclick="setCategory('ภาษาอังกฤษ (English)')">
+          <button class="quick-cat-btn" data-category="ภาษาอังกฤษ (English)" onclick="setCategory('ภาษาอังกฤษ (English)', true, 'cardContainer')">
             <span class="qcat-icon">🇬🇧</span>
             <div class="qcat-text">
               <span class="qcat-name">อังกฤษ (English)</span>
               <span class="qcat-sub">ไวยากรณ์ & Reading</span>
             </div>
           </button>
-          <button class="quick-cat-btn" data-category="ภาษาไทย & สังคม" onclick="setCategory('ภาษาไทย & สังคม')">
+          <button class="quick-cat-btn" data-category="ภาษาไทย & สังคม" onclick="setCategory('ภาษาไทย & สังคม', true, 'cardContainer')">
             <span class="qcat-icon">🇹🇭</span>
             <div class="qcat-text">
               <span class="qcat-name">ไทย & สังคม</span>
               <span class="qcat-sub">หลักภาษา & สังคมศึกษา</span>
             </div>
           </button>
-          <button class="quick-cat-btn active" data-category="all" onclick="setCategory('all')">
+          <button class="quick-cat-btn active" data-category="all" onclick="setCategory('all', true, 'cardContainer')">
             <span class="qcat-icon">📚</span>
             <div class="qcat-text">
               <span class="qcat-name">คลังข้อสอบทั้งหมด</span>
@@ -412,7 +412,7 @@
       </div>
 
     <!-- Sub-Filter Controls (Subject & Year Sort) -->
-    <section class="reading-controls-bar">
+    <div class="reading-controls-bar">
       <!-- Mobile Category Chips (Horizontal Scroll) -->
       <div class="mobile-chip-scroll">
         <button class="chip active" data-category="all">ทั้งหมด (<span id="countAll">0</span>)</button>
@@ -449,7 +449,7 @@
           </select>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- Active Search Query Indicator -->
     <div class="query-indicator-bar" id="filterIndicator" style="display: none;">

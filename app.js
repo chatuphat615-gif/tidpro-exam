@@ -944,11 +944,27 @@ function setCategory(cat, shouldScroll = true) {
   filterAndSortItems();
 
   if (shouldScroll) {
-    const examsSection = document.getElementById('examsSection');
-    if (examsSection) {
-      examsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const target = scrollTargetId || (window.innerWidth <= 768 ? 'cardContainer' : 'examsSection');
+    setTimeout(() => scrollToSection(target), 40);
   }
+}
+
+// Robust, overshoot-free smooth scroll with sticky header offset
+function scrollToSection(targetId) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  
+  target.classList.add('revealed');
+  
+  const navHeader = document.querySelector('.reading-nav-header');
+  const headerOffset = navHeader ? navHeader.offsetHeight + 16 : 75;
+  
+  const targetY = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+  
+  window.scrollTo({
+    top: Math.max(0, targetY),
+    behavior: 'smooth'
+  });
 }
 
 function goToHome() {
@@ -967,7 +983,7 @@ desktopNavBtns.forEach(btn => {
       goToHome();
     } else {
       const cat = btn.dataset.category || 'all';
-      setCategory(cat, true);
+      setCategory(cat, true, 'examsSection');
     }
     // Smoothly scroll active button into center view so it is never clipped
     btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -1055,8 +1071,11 @@ window.addEventListener('resize', () => updateNavSlider());
 // CTA from Tutor Hero Section to Exams
 const btnExploreExams = document.getElementById('btnExploreExams');
 if (btnExploreExams) {
-  btnExploreExams.addEventListener('click', () => {
-    setCategory('all', true);
+  btnExploreExams.addEventListener('click', (e) => {
+    if (e) e.preventDefault();
+    setCategory('all', false);
+    const targetId = window.innerWidth <= 768 ? 'mobileQuickCategories' : 'examsSection';
+    setTimeout(() => scrollToSection(targetId), 40);
   });
 }
 
@@ -1155,7 +1174,7 @@ function animateMouseSpotlight() {
 requestAnimationFrame(animateMouseSpotlight);
 
 // ==========================================================================
-// 10. Scroll-Driven Reveal & Smooth Floating Animation ("พอเลื่อนขึ้นภาพฉันกับเพื่อน และ text ในหน้านั้น ก้ลอยขึ้นมา")
+// 10. Scroll-Driven Reveal & Smooth Floating Animation
 // ==========================================================================
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -1164,26 +1183,30 @@ const revealObserver = new IntersectionObserver((entries) => {
     }
   });
 }, {
-  threshold: 0.12,
-  rootMargin: '0px 0px -40px 0px'
+  threshold: 0.01,
+  rootMargin: '100px 0px 100px 0px'
 });
 
 document.querySelectorAll('.reveal-on-scroll').forEach(el => {
   revealObserver.observe(el);
+  if (window.innerWidth <= 768) {
+    el.classList.add('revealed');
+  }
 });
 
 // Immediately reveal the hero landing section on page load
 const homeSec = document.getElementById('homeSection');
 if (homeSec) {
-  setTimeout(() => homeSec.classList.add('revealed'), 60);
+  homeSec.classList.add('revealed');
 }
 
-// Silky smooth scroll parallax on tutor duo cutouts and credentials
+// Silky smooth scroll parallax on tutor duo cutouts and credentials (desktop only)
 const tutorFigLeft = document.querySelector('.figure-left');
 const tutorFigRight = document.querySelector('.figure-right');
 const tutorInfoCol = document.querySelector('.tutor-info-col');
 
 window.addEventListener('scroll', () => {
+  if (window.innerWidth <= 768) return; // Avoid layout thrashing on mobile devices
   const scrollY = window.scrollY;
   if (tutorFigLeft && tutorFigRight && scrollY < 950) {
     const floatOffset = scrollY * 0.14;
@@ -1196,13 +1219,23 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 // Initial Exam Catalog Rendering & liquid nav slider positioning
-if (typeof examData !== 'undefined') {
-  if (countAllSpan) countAllSpan.textContent = examData.length;
-  filterAndSortItems();
+function initExamCatalog() {
+  if (typeof examData !== 'undefined') {
+    if (countAllSpan) countAllSpan.textContent = examData.length;
+    filterAndSortItems();
+  }
 }
+initExamCatalog();
 
 window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
+  initExamCatalog();
   setTimeout(() => updateNavSlider(), 100);
+});
+
+window.addEventListener('load', () => {
+  document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
+  initExamCatalog();
 });
 setTimeout(() => updateNavSlider(), 150);
 
