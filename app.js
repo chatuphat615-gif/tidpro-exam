@@ -627,7 +627,7 @@ if (drawerBackdrop) {
 // Real, official logos with transparent backgrounds & characteristic symbols
 // ==========================================================================
 function getInsigniaLogo(item) {
-  if (!item) return `<img src="assets/logos/simulator.svg" alt="TIDPRO EXAM" class="card-insignia-img" loading="lazy">`;
+  if (!item) return `<img src="simulator.svg" alt="TIDPRO EXAM" class="card-insignia-img" loading="lazy">`;
   const academy = (item.academy || '').toLowerCase();
   const title = (item.title || '').toLowerCase();
   const sub = (item.sub_academy || '').toLowerCase();
@@ -636,70 +636,70 @@ function getInsigniaLogo(item) {
 
   // 1. KVIS (รร.กำเนิดวิทย์) - โลโก้จริงสถาบัน
   if (academy.includes('กำเนิดวิทย์') || title.includes('kvis') || title.includes('กำเนิดวิทย์') || sub.includes('kvis')) {
-    return `<img src="assets/logos/kvis.png" alt="โลโก้ รร.กำเนิดวิทย์ (KVIS)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="kvis.png" alt="โลโก้ รร.กำเนิดวิทย์ (KVIS)" class="card-insignia-img" loading="lazy">`;
   }
   // 2. รร.เตรียมอุดมศึกษา - พระเกี้ยว (Official Emblem)
   if (academy.includes('เตรียมอุดม') || title.includes('เตรียมอุดม') || sub.includes('triam')) {
-    return `<img src="assets/logos/tu.svg" alt="พระเกี้ยว รร.เตรียมอุดมศึกษา" class="card-insignia-img" loading="lazy">`;
+    return `<img src="tu.svg" alt="พระเกี้ยว รร.เตรียมอุดมศึกษา" class="card-insignia-img" loading="lazy">`;
   }
   // 3. รร.มหิดลวิทยานุสรณ์ (MWIT) - โลโก้จริงสถาบัน
   if (academy.includes('มหิดล') || title.includes('มหิดล') || title.includes('mwit') || sub.includes('mwit')) {
-    return `<img src="assets/logos/mwit.png" alt="โลโก้ รร.มหิดลวิทยานุสรณ์ (MWIT)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="mwit.png" alt="โลโก้ รร.มหิดลวิทยานุสรณ์ (MWIT)" class="card-insignia-img" loading="lazy">`;
   }
   // 4. รร.สวนกุหลาบวิทยาลัย - ตรากุหลาบ ส.ก. (Official Crest)
   if (academy.includes('สวนกุหลาบ') || title.includes('สวนกุหลาบ') || sub.includes('sk')) {
-    return `<img src="assets/logos/sk.png" alt="ตราประจำ รร.สวนกุหลาบวิทยาลัย" class="card-insignia-img" loading="lazy">`;
+    return `<img src="sk.png" alt="ตราประจำ รร.สวนกุหลาบวิทยาลัย" class="card-insignia-img" loading="lazy">`;
   }
   // 5. รร.บดินทรเดชา (สิงห์ สิงหเสนี) - ตราประจำโรงเรียน
   if (academy.includes('บดินทร') || title.includes('บดินทร') || sub.includes('bodin')) {
-    return `<img src="assets/logos/bodin.png" alt="ตราประจำ รร.บดินทรเดชา" class="card-insignia-img" loading="lazy">`;
+    return `<img src="bodin.png" alt="ตราประจำ รร.บดินทรเดชา" class="card-insignia-img" loading="lazy">`;
   }
   // 6. รร.สาธิต มศว ปทุมวัน - ตรากราฟ มศว
   if (academy.includes('สาธิต') || title.includes('สาธิต') || title.includes('ปทุมวัน') || sub.includes('patumwan')) {
-    return `<img src="assets/logos/patumwan.svg" alt="ตรา รร.สาธิต มศว ปทุมวัน" class="card-insignia-img" loading="lazy">`;
+    return `<img src="patumwan.svg" alt="ตรา รร.สาธิต มศว ปทุมวัน" class="card-insignia-img" loading="lazy">`;
   }
   // 7. รร.ช่างฝีมือทหาร (MTTS) - ตราจริงเฟืองและสมอ
   if (academy.includes('ช่างฝีมือทหาร') || title.includes('ช่างฝีมือทหาร') || sub.includes('mtts') || cat.includes('ช่างฝีมือทหาร')) {
-    return `<img src="assets/logos/mtts.png" alt="ตรา รร.ช่างฝีมือทหาร (MTTS)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="mtts.png" alt="ตรา รร.ช่างฝีมือทหาร (MTTS)" class="card-insignia-img" loading="lazy">`;
   }
   // 8. รร.นายร้อย จปร. (CRMA - ทหารบก) - ตราจริงนายร้อย จปร.
   if (academy.includes('จปร') || title.includes('จปร') || sub.includes('crma') || title.includes('ทหารบก')) {
-    return `<img src="assets/logos/crma.png" alt="ตรา รร.นายร้อยพระจุลจอมเกล้า (จปร.)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="crma.png" alt="ตรา รร.นายร้อยพระจุลจอมเกล้า (จปร.)" class="card-insignia-img" loading="lazy">`;
   }
   // 9. รร.นายเรือ (RTNA - ทหารเรือ) - ตราจริงนายเรือ
   if (academy.includes('นายเรือ') || title.includes('นายเรือ') || sub.includes('rtna') || title.includes('ทหารเรือ')) {
-    return `<img src="assets/logos/rtna.png" alt="ตรา รร.นายเรือ (RTNA)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="rtna.png" alt="ตรา รร.นายเรือ (RTNA)" class="card-insignia-img" loading="lazy">`;
   }
   // 10. รร.นายเรืออากาศฯ (RTAFA - ทหารอากาศ) - ตราจริงนายเรืออากาศ
   if (academy.includes('นายเรืออากาศ') || title.includes('นายเรืออากาศ') || sub.includes('rtafa') || title.includes('ทหารอากาศ')) {
-    return `<img src="assets/logos/rtafa.svg" alt="ตรา รร.นายเรืออากาศนวมินทกษัตริยาธิราช" class="card-insignia-img" loading="lazy">`;
+    return `<img src="rtafa.svg" alt="ตรา รร.นายเรืออากาศนวมินทกษัตริยาธิราช" class="card-insignia-img" loading="lazy">`;
   }
   // 11. รร.นายร้อยตำรวจ (RPCA) - ตราจริงนายร้อยตำรวจ
   if (academy.includes('ตำรวจ') || title.includes('ตำรวจ') || sub.includes('rpca')) {
-    return `<img src="assets/logos/rpca.png" alt="ตรา รร.นายร้อยตำรวจ (RPCA)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="rpca.png" alt="ตรา รร.นายร้อยตำรวจ (RPCA)" class="card-insignia-img" loading="lazy">`;
   }
   // 12. รร.เตรียมทหาร 4 เหล่า (AFAPS) - ตราจริงเตรียมทหาร
   if (academy.includes('เตรียมทหาร') || title.includes('เตรียมทหาร') || sub.includes('afaps') || cat.includes('เตรียมทหาร')) {
-    return `<img src="assets/logos/afaps.png" alt="ตรา รร.เตรียมทหาร (AFAPS)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="afaps.png" alt="ตรา รร.เตรียมทหาร (AFAPS)" class="card-insignia-img" loading="lazy">`;
   }
   // 13. แบบฝึกข้อสอบคณิตศาสตร์ - เครื่องหมายบวกลบคูณหารอันเป็นเอกลักษณ์ (+ - × ÷ =)
   if (subj === 'คณิต' || cat.includes('คณิต') || sub.includes('math') || title.includes('คณิต')) {
-    return `<img src="assets/logos/subject_math.svg" alt="สัญลักษณ์คณิตศาสตร์ (+ - × ÷ =)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_math.svg" alt="สัญลักษณ์คณิตศาสตร์ (+ - × ÷ =)" class="card-insignia-img" loading="lazy">`;
   }
   // 14. แบบฝึกข้อสอบวิทยาศาสตร์ - หลอดทดลองเคมีและวงโคจรอิเล็กตรอน
   if (subj === 'วิทย์' || cat.includes('วิทย์') || sub.includes('sci') || title.includes('วิทย')) {
-    return `<img src="assets/logos/subject_science.svg" alt="สัญลักษณ์วิทยาศาสตร์ (เคมี & ฟิสิกส์)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_science.svg" alt="สัญลักษณ์วิทยาศาสตร์ (เคมี & ฟิสิกส์)" class="card-insignia-img" loading="lazy">`;
   }
   // 15. แบบฝึกข้อสอบภาษาอังกฤษ - ตัวอักษร ABC และธงสหราชอาณาจักร
   if (subj === 'อังกฤษ' || cat.includes('อังกฤษ') || sub.includes('eng') || title.includes('อังกฤษ')) {
-    return `<img src="assets/logos/subject_english.svg" alt="สัญลักษณ์วิชาภาษาอังกฤษ (A B C)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_english.svg" alt="สัญลักษณ์วิชาภาษาอังกฤษ (A B C)" class="card-insignia-img" loading="lazy">`;
   }
   // 16. แบบฝึกภาษาไทย & สังคมศึกษา - อักษร ก ข ค และพานรัฐธรรมนูญ
   if (subj === 'ไทย' || subj === 'สังคม' || cat.includes('ไทย') || sub.includes('thai') || title.includes('ไทย') || title.includes('สังคม')) {
-    return `<img src="assets/logos/subject_thai_social.svg" alt="สัญลักษณ์วิชาภาษาไทย & สังคมศึกษา" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_thai_social.svg" alt="สัญลักษณ์วิชาภาษาไทย & สังคมศึกษา" class="card-insignia-img" loading="lazy">`;
   }
   // 17. Default simulator seal
-  return `<img src="assets/logos/simulator.svg" alt="แนวข้อสอบจำลอง" class="card-insignia-img" loading="lazy">`;
+  return `<img src="simulator.svg" alt="แนวข้อสอบจำลอง" class="card-insignia-img" loading="lazy">`;
 }
 
 function formatTitle(title) {
