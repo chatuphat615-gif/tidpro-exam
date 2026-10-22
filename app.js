@@ -906,6 +906,9 @@ function resetAllFilters() {
 
   desktopNavBtns.forEach(b => b.classList.toggle('active', b.dataset.category === 'all'));
   mobileChips.forEach(c => c.classList.toggle('active', c.dataset.category === 'all'));
+  document.querySelectorAll('.quick-cat-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.category === 'all');
+  });
 
   updateNavSlider();
   filterAndSortItems();
@@ -934,6 +937,9 @@ function setCategory(cat, shouldScroll = true) {
     }
   });
   mobileChips.forEach(chip => chip.classList.toggle('active', chip.dataset.category === cat));
+  document.querySelectorAll('.quick-cat-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.category === cat);
+  });
   updateNavSlider();
   filterAndSortItems();
 
