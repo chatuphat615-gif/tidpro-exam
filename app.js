@@ -500,7 +500,8 @@ function updateBookmarkUI() {
 
 function toggleBookmark(item) {
   const index = savedBookmarks.findIndex(b => b.url === item.url);
-  if (index > -1) {
+  const isSaving = (index === -1);
+  if (!isSaving) {
     savedBookmarks.splice(index, 1);
     showToast("ลบออกจากข้อสอบที่บันทึกแล้ว");
   } else {
@@ -513,7 +514,17 @@ function toggleBookmark(item) {
   }
   persistUserData();
   updateBookmarkUI();
-  filterAndSortItems();
+
+  // Instant in-place card bookmark button update without full grid re-render!
+  if (cardContainer) {
+    const btn = cardContainer.querySelector(`.btn-bookmark-action[data-url="${CSS.escape(item.url)}"]`);
+    if (btn) {
+      btn.classList.toggle('saved', isSaving);
+      btn.setAttribute('title', isSaving ? 'ลบจากที่บันทึก' : 'บันทึกข้อสอบ');
+      const svg = btn.querySelector('svg');
+      if (svg) svg.setAttribute('fill', isSaving ? '#d97706' : 'none');
+    }
+  }
 }
 
 function toggleBookmarkByUrl(url) {
@@ -627,7 +638,7 @@ if (drawerBackdrop) {
 // Real, official logos with transparent backgrounds & characteristic symbols
 // ==========================================================================
 function getInsigniaLogo(item) {
-  if (!item) return `<img src="simulator.svg" alt="TIDPRO EXAM" class="card-insignia-img" loading="lazy">`;
+  if (!item) return `<img src="simulator.svg" alt="TIDPRO EXAM" class="card-insignia-img" loading="lazy" decoding="async">`;
   const academy = (item.academy || '').toLowerCase();
   const title = (item.title || '').toLowerCase();
   const sub = (item.sub_academy || '').toLowerCase();
@@ -636,70 +647,70 @@ function getInsigniaLogo(item) {
 
   // 1. KVIS (รร.กำเนิดวิทย์) - โลโก้จริงสถาบัน
   if (academy.includes('กำเนิดวิทย์') || title.includes('kvis') || title.includes('กำเนิดวิทย์') || sub.includes('kvis')) {
-    return `<img src="kvis.png" alt="โลโก้ รร.กำเนิดวิทย์ (KVIS)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="kvis.png" alt="โลโก้ รร.กำเนิดวิทย์ (KVIS)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 2. รร.เตรียมอุดมศึกษา - พระเกี้ยว (Official Emblem)
   if (academy.includes('เตรียมอุดม') || title.includes('เตรียมอุดม') || sub.includes('triam')) {
-    return `<img src="tu.svg" alt="พระเกี้ยว รร.เตรียมอุดมศึกษา" class="card-insignia-img" loading="lazy">`;
+    return `<img src="tu.svg" alt="พระเกี้ยว รร.เตรียมอุดมศึกษา" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 3. รร.มหิดลวิทยานุสรณ์ (MWIT) - โลโก้จริงสถาบัน
   if (academy.includes('มหิดล') || title.includes('มหิดล') || title.includes('mwit') || sub.includes('mwit')) {
-    return `<img src="mwit.png" alt="โลโก้ รร.มหิดลวิทยานุสรณ์ (MWIT)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="mwit.png" alt="โลโก้ รร.มหิดลวิทยานุสรณ์ (MWIT)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 4. รร.สวนกุหลาบวิทยาลัย - ตรากุหลาบ ส.ก. (Official Crest)
   if (academy.includes('สวนกุหลาบ') || title.includes('สวนกุหลาบ') || sub.includes('sk')) {
-    return `<img src="sk.png" alt="ตราประจำ รร.สวนกุหลาบวิทยาลัย" class="card-insignia-img" loading="lazy">`;
+    return `<img src="sk.png" alt="ตราประจำ รร.สวนกุหลาบวิทยาลัย" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 5. รร.บดินทรเดชา (สิงห์ สิงหเสนี) - ตราประจำโรงเรียน
   if (academy.includes('บดินทร') || title.includes('บดินทร') || sub.includes('bodin')) {
-    return `<img src="bodin.png" alt="ตราประจำ รร.บดินทรเดชา" class="card-insignia-img" loading="lazy">`;
+    return `<img src="bodin.png" alt="ตราประจำ รร.บดินทรเดชา" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 6. รร.สาธิต มศว ปทุมวัน - ตรากราฟ มศว
   if (academy.includes('สาธิต') || title.includes('สาธิต') || title.includes('ปทุมวัน') || sub.includes('patumwan')) {
-    return `<img src="patumwan.svg" alt="ตรา รร.สาธิต มศว ปทุมวัน" class="card-insignia-img" loading="lazy">`;
+    return `<img src="patumwan.svg" alt="ตรา รร.สาธิต มศว ปทุมวัน" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 7. รร.ช่างฝีมือทหาร (MTTS) - ตราจริงเฟืองและสมอ
   if (academy.includes('ช่างฝีมือทหาร') || title.includes('ช่างฝีมือทหาร') || sub.includes('mtts') || cat.includes('ช่างฝีมือทหาร')) {
-    return `<img src="mtts.png" alt="ตรา รร.ช่างฝีมือทหาร (MTTS)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="mtts.png" alt="ตรา รร.ช่างฝีมือทหาร (MTTS)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 8. รร.นายร้อย จปร. (CRMA - ทหารบก) - ตราจริงนายร้อย จปร.
   if (academy.includes('จปร') || title.includes('จปร') || sub.includes('crma') || title.includes('ทหารบก')) {
-    return `<img src="crma.png" alt="ตรา รร.นายร้อยพระจุลจอมเกล้า (จปร.)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="crma.png" alt="ตรา รร.นายร้อยพระจุลจอมเกล้า (จปร.)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 9. รร.นายเรือ (RTNA - ทหารเรือ) - ตราจริงนายเรือ
   if (academy.includes('นายเรือ') || title.includes('นายเรือ') || sub.includes('rtna') || title.includes('ทหารเรือ')) {
-    return `<img src="rtna.png" alt="ตรา รร.นายเรือ (RTNA)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="rtna.png" alt="ตรา รร.นายเรือ (RTNA)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 10. รร.นายเรืออากาศฯ (RTAFA - ทหารอากาศ) - ตราจริงนายเรืออากาศ
   if (academy.includes('นายเรืออากาศ') || title.includes('นายเรืออากาศ') || sub.includes('rtafa') || title.includes('ทหารอากาศ')) {
-    return `<img src="rtafa.svg" alt="ตรา รร.นายเรืออากาศนวมินทกษัตริยาธิราช" class="card-insignia-img" loading="lazy">`;
+    return `<img src="rtafa.svg" alt="ตรา รร.นายเรืออากาศนวมินทกษัตริยาธิราช" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 11. รร.นายร้อยตำรวจ (RPCA) - ตราจริงนายร้อยตำรวจ
   if (academy.includes('ตำรวจ') || title.includes('ตำรวจ') || sub.includes('rpca')) {
-    return `<img src="rpca.png" alt="ตรา รร.นายร้อยตำรวจ (RPCA)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="rpca.png" alt="ตรา รร.นายร้อยตำรวจ (RPCA)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 12. รร.เตรียมทหาร 4 เหล่า (AFAPS) - ตราจริงเตรียมทหาร
   if (academy.includes('เตรียมทหาร') || title.includes('เตรียมทหาร') || sub.includes('afaps') || cat.includes('เตรียมทหาร')) {
-    return `<img src="afaps.png" alt="ตรา รร.เตรียมทหาร (AFAPS)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="afaps.png" alt="ตรา รร.เตรียมทหาร (AFAPS)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 13. แบบฝึกข้อสอบคณิตศาสตร์ - เครื่องหมายบวกลบคูณหารอันเป็นเอกลักษณ์ (+ - × ÷ =)
   if (subj === 'คณิต' || cat.includes('คณิต') || sub.includes('math') || title.includes('คณิต')) {
-    return `<img src="subject_math.svg" alt="สัญลักษณ์คณิตศาสตร์ (+ - × ÷ =)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_math.svg" alt="สัญลักษณ์คณิตศาสตร์ (+ - × ÷ =)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 14. แบบฝึกข้อสอบวิทยาศาสตร์ - หลอดทดลองเคมีและวงโคจรอิเล็กตรอน
   if (subj === 'วิทย์' || cat.includes('วิทย์') || sub.includes('sci') || title.includes('วิทย')) {
-    return `<img src="subject_science.svg" alt="สัญลักษณ์วิทยาศาสตร์ (เคมี & ฟิสิกส์)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_science.svg" alt="สัญลักษณ์วิทยาศาสตร์ (เคมี & ฟิสิกส์)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 15. แบบฝึกข้อสอบภาษาอังกฤษ - ตัวอักษร ABC และธงสหราชอาณาจักร
   if (subj === 'อังกฤษ' || cat.includes('อังกฤษ') || sub.includes('eng') || title.includes('อังกฤษ')) {
-    return `<img src="subject_english.svg" alt="สัญลักษณ์วิชาภาษาอังกฤษ (A B C)" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_english.svg" alt="สัญลักษณ์วิชาภาษาอังกฤษ (A B C)" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 16. แบบฝึกภาษาไทย & สังคมศึกษา - อักษร ก ข ค และพานรัฐธรรมนูญ
   if (subj === 'ไทย' || subj === 'สังคม' || cat.includes('ไทย') || sub.includes('thai') || title.includes('ไทย') || title.includes('สังคม')) {
-    return `<img src="subject_thai_social.svg" alt="สัญลักษณ์วิชาภาษาไทย & สังคมศึกษา" class="card-insignia-img" loading="lazy">`;
+    return `<img src="subject_thai_social.svg" alt="สัญลักษณ์วิชาภาษาไทย & สังคมศึกษา" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 17. Default simulator seal
-  return `<img src="simulator.svg" alt="แนวข้อสอบจำลอง" class="card-insignia-img" loading="lazy">`;
+  return `<img src="simulator.svg" alt="แนวข้อสอบจำลอง" class="card-insignia-img" loading="lazy" decoding="async">`;
 }
 
 function formatTitle(title) {
@@ -709,30 +720,14 @@ function formatTitle(title) {
 // ==========================================================================
 // 6. Card Rendering
 // ==========================================================================
-function renderCards(items) {
-  cardContainer.innerHTML = '';
-  
-  if (countAllSpan) {
-    countAllSpan.textContent = typeof examData !== 'undefined' ? examData.length : items.length;
-  }
-  
-  if (items.length === 0) {
-    emptyState.style.display = 'block';
-    return;
-  }
-  emptyState.style.display = 'none';
+function createCardHtml(item) {
+  const displayTitle = formatTitle(item.title);
+  const yearDisplay = item.year > 0 ? `พ.ศ. ${item.year}` : 'แนวข้อสอบ';
+  const isSaved = savedBookmarks.some(b => b.url === item.url);
+  const insigniaHtml = getInsigniaLogo(item);
 
-  items.forEach(item => {
-    const card = document.createElement('article');
-    card.className = 'exam-book-card';
-    card.dataset.category = item.category;
-
-    const displayTitle = formatTitle(item.title);
-    const yearDisplay = item.year > 0 ? `พ.ศ. ${item.year}` : 'แนวข้อสอบ';
-    const isSaved = savedBookmarks.some(b => b.url === item.url);
-    const insigniaHtml = getInsigniaLogo(item);
-
-    card.innerHTML = `
+  return `
+    <article class="exam-book-card" data-category="${item.category}">
       <div class="card-insignia-banner">
         <div class="card-top-tags">
           <span class="badge-academy">${item.academy || item.category}</span>
@@ -756,36 +751,66 @@ function renderCards(items) {
             <span>ดาวน์โหลด PDF</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           </a>
-          ${item.preview_pdf ? `<button class="btn-preview-doc" data-preview="${item.preview_pdf}" data-title="${displayTitle}" data-direct="${item.pdf_url}">ตัวอย่าง</button>` : ''}
-          <button class="btn-bookmark-action ${isSaved ? 'saved' : ''}" data-url="${item.url}" title="${isSaved ? 'ลบจากที่บันทึก' : 'บันทึกข้อสอบ'}">
+          ${item.preview_pdf ? `<button type="button" class="btn-preview-doc" data-preview="${item.preview_pdf}" data-title="${displayTitle}" data-direct="${item.pdf_url}">ตัวอย่าง</button>` : ''}
+          <button type="button" class="btn-bookmark-action ${isSaved ? 'saved' : ''}" data-url="${item.url}" title="${isSaved ? 'ลบจากที่บันทึก' : 'บันทึกข้อสอบ'}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="${isSaved ? '#d97706' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
           </button>
         </div>
       </div>
-    `;
+    </article>
+  `;
+}
 
-    cardContainer.appendChild(card);
-  });
+// Single Event Delegation for ultra-high performance on mobile and tablet
+let isCardContainerBound = false;
+function initCardContainerEvents() {
+  if (isCardContainerBound || !cardContainer) return;
+  isCardContainerBound = true;
 
-  // Attach Event Handlers
-  cardContainer.querySelectorAll('.btn-preview-doc').forEach(btn => {
-    btn.addEventListener('click', () => {
-      openPreview(btn.dataset.preview, btn.dataset.title, btn.dataset.direct);
-    });
-  });
-
-  cardContainer.querySelectorAll('.btn-open-pdf').forEach(link => {
-    link.addEventListener('click', () => {
-      recordHistory(link.dataset.title, link.dataset.pdf, link.dataset.pdf);
-    });
-  });
-
-  cardContainer.querySelectorAll('.btn-bookmark-action').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  cardContainer.addEventListener('click', (e) => {
+    // 1. Bookmark Action
+    const bookmarkBtn = e.target.closest('.btn-bookmark-action');
+    if (bookmarkBtn) {
+      e.preventDefault();
       e.stopPropagation();
-      toggleBookmarkByUrl(btn.dataset.url);
-    });
+      toggleBookmarkByUrl(bookmarkBtn.dataset.url);
+      return;
+    }
+
+    // 2. Preview Doc Modal
+    const previewBtn = e.target.closest('.btn-preview-doc');
+    if (previewBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      openPreview(previewBtn.dataset.preview, previewBtn.dataset.title, previewBtn.dataset.direct);
+      return;
+    }
+
+    // 3. Open PDF direct history tracking
+    const openPdfLink = e.target.closest('.btn-open-pdf');
+    if (openPdfLink) {
+      recordHistory(openPdfLink.dataset.title, openPdfLink.dataset.pdf, openPdfLink.dataset.pdf);
+      return;
+    }
   });
+}
+
+// High-speed bulk DOM insertion
+function renderCards(items) {
+  initCardContainerEvents();
+  
+  if (countAllSpan) {
+    countAllSpan.textContent = typeof examData !== 'undefined' ? examData.length : items.length;
+  }
+  
+  if (!items || items.length === 0) {
+    cardContainer.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  cardContainer.innerHTML = items.map(item => createCardHtml(item)).join('');
 }
 
 // ==========================================================================
@@ -1020,9 +1045,16 @@ if (desktopNav) {
     }
   }, { passive: false });
 
-  // 2. Keep liquid pill accurately tracked during scroll
+  // 2. Keep liquid pill accurately tracked during scroll (RAF throttled)
+  let navScrollTicking = false;
   desktopNav.addEventListener('scroll', () => {
-    updateNavSlider();
+    if (!navScrollTicking) {
+      navScrollTicking = true;
+      requestAnimationFrame(() => {
+        updateNavSlider();
+        navScrollTicking = false;
+      });
+    }
   }, { passive: true });
 
   // 3. Smooth Mouse Click & Drag
@@ -1097,7 +1129,14 @@ if (sortSelect) {
   });
 }
 
-searchInput.addEventListener('input', filterAndSortItems);
+// Debounced Search Input (prevents keypress stutter on virtual keyboards)
+let searchDebounceTimer = null;
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    filterAndSortItems();
+  }, 90);
+});
 
 // ==========================================================================
 // 8. PDF Modal Viewer
@@ -1142,36 +1181,44 @@ getStoredUsers();
 syncUserLocalData();
 updateAuthUI();
 
-// Interactive Dynamic Mouse Follower Spotlight & Mesh Parallax
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-let currentX = mouseX;
-let currentY = mouseY;
-let isMouseActive = false;
+// Interactive Dynamic Mouse Follower Spotlight (Desktop Fine-Pointer Only)
+const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-window.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  isMouseActive = true;
+if (isFinePointer && mouseGlow) {
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let currentX = mouseX;
+  let currentY = mouseY;
+  let isMoving = false;
+  let rafId = null;
 
-  // Background Mesh Orbs Parallax shift
-  const normX = (e.clientX / window.innerWidth) - 0.5;
-  const normY = (e.clientY / window.innerHeight) - 0.5;
-  document.documentElement.style.setProperty('--orb-shift-x', `${normX * 60}px`);
-  document.documentElement.style.setProperty('--orb-shift-y', `${normY * 60}px`);
-});
+  function updateSpotlight() {
+    const dx = mouseX - currentX;
+    const dy = mouseY - currentY;
+    currentX += dx * 0.14;
+    currentY += dy * 0.14;
+    
+    mouseGlow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
 
-function animateMouseSpotlight() {
-  if (mouseGlow && isMouseActive) {
-    // Silky smooth spring damping interpolation (lerp)
-    currentX += (mouseX - currentX) * 0.12;
-    currentY += (mouseY - currentY) * 0.12;
-    mouseGlow.style.left = `${currentX}px`;
-    mouseGlow.style.top = `${currentY}px`;
+    if (Math.abs(dx) > 0.15 || Math.abs(dy) > 0.15) {
+      rafId = requestAnimationFrame(updateSpotlight);
+    } else {
+      isMoving = false;
+      rafId = null;
+    }
   }
-  requestAnimationFrame(animateMouseSpotlight);
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!isMoving) {
+      isMoving = true;
+      if (!rafId) rafId = requestAnimationFrame(updateSpotlight);
+    }
+  }, { passive: true });
+} else if (mouseGlow) {
+  mouseGlow.style.display = 'none';
 }
-requestAnimationFrame(animateMouseSpotlight);
 
 // ==========================================================================
 // 10. Scroll-Driven Reveal & Smooth Floating Animation
@@ -1189,7 +1236,7 @@ const revealObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal-on-scroll').forEach(el => {
   revealObserver.observe(el);
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 1024) {
     el.classList.add('revealed');
   }
 });
@@ -1200,23 +1247,31 @@ if (homeSec) {
   homeSec.classList.add('revealed');
 }
 
-// Silky smooth scroll parallax on tutor duo cutouts and credentials (desktop only)
+// Silky smooth scroll parallax on tutor duo cutouts (Desktop Fine-Pointer Only)
 const tutorFigLeft = document.querySelector('.figure-left');
 const tutorFigRight = document.querySelector('.figure-right');
 const tutorInfoCol = document.querySelector('.tutor-info-col');
 
-window.addEventListener('scroll', () => {
-  if (window.innerWidth <= 768) return; // Avoid layout thrashing on mobile devices
-  const scrollY = window.scrollY;
-  if (tutorFigLeft && tutorFigRight && scrollY < 950) {
-    const floatOffset = scrollY * 0.14;
-    tutorFigLeft.style.transform = `translateX(18px) translateY(-${floatOffset}px)`;
-    tutorFigRight.style.transform = `translateX(-18px) translateY(-${floatOffset * 0.85}px)`;
-    if (tutorInfoCol) {
-      tutorInfoCol.style.transform = `translateY(-${scrollY * 0.05}px)`;
+if (isFinePointer && window.innerWidth > 1024) {
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        if (tutorFigLeft && tutorFigRight && scrollY < 800) {
+          const floatOffset = scrollY * 0.12;
+          tutorFigLeft.style.transform = `translateX(18px) translateY(-${floatOffset}px)`;
+          tutorFigRight.style.transform = `translateX(-18px) translateY(-${floatOffset * 0.85}px)`;
+          if (tutorInfoCol) {
+            tutorInfoCol.style.transform = `translateY(-${scrollY * 0.04}px)`;
+          }
+        }
+        scrollTicking = false;
+      });
     }
-  }
-}, { passive: true });
+  }, { passive: true });
+}
 
 // Initial Exam Catalog Rendering & liquid nav slider positioning
 function initExamCatalog() {
