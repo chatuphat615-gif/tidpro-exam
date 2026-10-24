@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://chatuphat615-gif.github.io/tidpro-exam/sitemap.xml
 Sitemap: https://tidpro-exam.pages.dev/sitemap.xml
