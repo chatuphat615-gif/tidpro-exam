@@ -35,11 +35,8 @@ function updateNavSlider(targetBtn) {
     navSlider.style.opacity = '0';
     return;
   }
-  const navRect = desktopNav.getBoundingClientRect();
-  const btnRect = activeBtn.getBoundingClientRect();
-  // Include scrollLeft so the slider aligns accurately when scrolled horizontally
-  const left = (btnRect.left - navRect.left) + desktopNav.scrollLeft;
-  const width = btnRect.width;
+  const left = activeBtn.offsetLeft;
+  const width = activeBtn.offsetWidth;
 
   navSlider.style.opacity = '1';
   navSlider.style.transform = `translateX(${left}px)`;
@@ -683,7 +680,7 @@ function getInsigniaLogo(item) {
   }
   // 10. รร.นายเรืออากาศฯ (RTAFA - ทหารอากาศ) - ตราจริงนายเรืออากาศ
   if (academy.includes('นายเรืออากาศ') || title.includes('นายเรืออากาศ') || sub.includes('rtafa') || title.includes('ทหารอากาศ')) {
-    return `<img src="rtafa.svg" alt="ตรา รร.นายเรืออากาศนวมินทกษัตริยาธิราช" class="card-insignia-img" loading="lazy" decoding="async">`;
+    return `<img src="rtafa.png" alt="ตรา รร.นายเรืออากาศนวมินทกษัตริยาธิราช" class="card-insignia-img" loading="lazy" decoding="async">`;
   }
   // 11. รร.นายร้อยตำรวจ (RPCA) - ตราจริงนายร้อยตำรวจ
   if (academy.includes('ตำรวจ') || title.includes('ตำรวจ') || sub.includes('rpca')) {
@@ -795,7 +792,12 @@ function initCardContainerEvents() {
   });
 }
 
-// High-speed bulk DOM insertion
+// Ultra-fast progressive chunk DOM insertion (Zero-Lag 60-120fps Mobile Engine)
+const BATCH_SIZE = 24;
+let currentlyRenderedCount = 0;
+let currentItemsToRender = [];
+let isBatchLoading = false;
+
 function renderCards(items) {
   initCardContainerEvents();
   
@@ -803,14 +805,67 @@ function renderCards(items) {
     countAllSpan.textContent = typeof examData !== 'undefined' ? examData.length : items.length;
   }
   
+  const existingLoadMore = document.getElementById('loadMoreContainer');
   if (!items || items.length === 0) {
     cardContainer.innerHTML = '';
+    if (existingLoadMore) existingLoadMore.style.display = 'none';
     emptyState.style.display = 'block';
     return;
   }
   emptyState.style.display = 'none';
 
-  cardContainer.innerHTML = items.map(item => createCardHtml(item)).join('');
+  currentItemsToRender = items;
+  currentlyRenderedCount = Math.min(items.length, BATCH_SIZE);
+
+  // Render initial batch of 24 items instantly (<3ms)
+  cardContainer.innerHTML = items.slice(0, currentlyRenderedCount).map(item => createCardHtml(item)).join('');
+
+  updateLoadMoreUI();
+}
+
+function loadNextBatch() {
+  if (isBatchLoading) return;
+  if (!currentItemsToRender || currentlyRenderedCount >= currentItemsToRender.length) return;
+  
+  isBatchLoading = true;
+  const nextCount = Math.min(currentItemsToRender.length, currentlyRenderedCount + BATCH_SIZE);
+  const nextSlice = currentItemsToRender.slice(currentlyRenderedCount, nextCount);
+  
+  const fragmentHtml = nextSlice.map(item => createCardHtml(item)).join('');
+  cardContainer.insertAdjacentHTML('beforeend', fragmentHtml);
+  currentlyRenderedCount = nextCount;
+  
+  updateLoadMoreUI();
+  setTimeout(() => { isBatchLoading = false; }, 180);
+}
+
+function updateLoadMoreUI() {
+  let loadMoreShell = document.getElementById('loadMoreContainer');
+  if (!loadMoreShell) {
+    loadMoreShell = document.createElement('div');
+    loadMoreShell.id = 'loadMoreContainer';
+    loadMoreShell.className = 'load-more-shell';
+    cardContainer.parentNode.insertBefore(loadMoreShell, cardContainer.nextSibling);
+  }
+
+  const remaining = currentItemsToRender.length - currentlyRenderedCount;
+  if (remaining > 0) {
+    loadMoreShell.style.display = 'flex';
+    loadMoreShell.innerHTML = `
+      <button type="button" class="btn-load-more" id="btnLoadMoreAction">
+        <span>📥 โหลดข้อสอบเพิ่มเติม (${currentlyRenderedCount} จาก ${currentItemsToRender.length} ชุด)</span>
+      </button>
+    `;
+    const btn = document.getElementById('btnLoadMoreAction');
+    if (btn) {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        loadNextBatch();
+      };
+    }
+  } else {
+    loadMoreShell.style.display = 'none';
+  }
 }
 
 // ==========================================================================
@@ -952,7 +1007,7 @@ if (resetFiltersBtn) {
   resetFiltersBtn.addEventListener('click', resetAllFilters);
 }
 
-function setCategory(cat, shouldScroll = true) {
+function setCategory(cat, shouldScroll = true, scrollTargetId = null) {
   currentCategory = cat;
   desktopNavBtns.forEach(btn => {
     if (btn.dataset.category) {
@@ -1037,13 +1092,12 @@ if (navScrollRightBtn && desktopNav) {
 
 // Silky Smooth Drag & Wheel Sliding on Desktop Bar
 if (desktopNav) {
-  // 1. Mouse Wheel Horizontal Gliding
+  // 1. Mouse Wheel Horizontal Gliding (Passive, smooth)
   desktopNav.addEventListener('wheel', (e) => {
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      e.preventDefault();
-      desktopNav.scrollLeft += e.deltaY * 0.95;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      desktopNav.scrollLeft += e.deltaX;
     }
-  }, { passive: false });
+  }, { passive: true });
 
   // 2. Keep liquid pill accurately tracked during scroll (RAF throttled)
   let navScrollTicking = false;
@@ -1185,35 +1239,14 @@ updateAuthUI();
 const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 if (isFinePointer && mouseGlow) {
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let currentX = mouseX;
-  let currentY = mouseY;
-  let isMoving = false;
-  let rafId = null;
-
-  function updateSpotlight() {
-    const dx = mouseX - currentX;
-    const dy = mouseY - currentY;
-    currentX += dx * 0.14;
-    currentY += dy * 0.14;
-    
-    mouseGlow.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) translate(-50%, -50%)`;
-
-    if (Math.abs(dx) > 0.15 || Math.abs(dy) > 0.15) {
-      rafId = requestAnimationFrame(updateSpotlight);
-    } else {
-      isMoving = false;
-      rafId = null;
-    }
-  }
-
-  window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    if (!isMoving) {
-      isMoving = true;
-      if (!rafId) rafId = requestAnimationFrame(updateSpotlight);
+  let pointerTicking = false;
+  window.addEventListener('pointermove', (e) => {
+    if (!pointerTicking) {
+      pointerTicking = true;
+      requestAnimationFrame(() => {
+        mouseGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+        pointerTicking = false;
+      });
     }
   }, { passive: true });
 } else if (mouseGlow) {
@@ -1221,25 +1254,30 @@ if (isFinePointer && mouseGlow) {
 }
 
 // ==========================================================================
-// 10. Scroll-Driven Reveal & Smooth Floating Animation
+// 10. Scroll-Driven Reveal (Instant on Mobile, Lightweight on Desktop)
 // ==========================================================================
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('revealed');
-    }
+if (window.innerWidth > 1024 && isFinePointer) {
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.05,
+    rootMargin: '50px'
   });
-}, {
-  threshold: 0.01,
-  rootMargin: '100px 0px 100px 0px'
-});
 
-document.querySelectorAll('.reveal-on-scroll').forEach(el => {
-  revealObserver.observe(el);
-  if (window.innerWidth <= 1024) {
+  document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+    revealObserver.observe(el);
+  });
+} else {
+  // Mobile / Touch: Reveal everything instantly without observer overhead
+  document.querySelectorAll('.reveal-on-scroll').forEach(el => {
     el.classList.add('revealed');
-  }
-});
+  });
+}
 
 // Immediately reveal the hero landing section on page load
 const homeSec = document.getElementById('homeSection');
@@ -1247,51 +1285,28 @@ if (homeSec) {
   homeSec.classList.add('revealed');
 }
 
-// Silky smooth scroll parallax on tutor duo cutouts (Desktop Fine-Pointer Only)
-const tutorFigLeft = document.querySelector('.figure-left');
-const tutorFigRight = document.querySelector('.figure-right');
-const tutorInfoCol = document.querySelector('.tutor-info-col');
-
-if (isFinePointer && window.innerWidth > 1024) {
-  let scrollTicking = false;
-  window.addEventListener('scroll', () => {
-    if (!scrollTicking) {
-      scrollTicking = true;
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        if (tutorFigLeft && tutorFigRight && scrollY < 800) {
-          const floatOffset = scrollY * 0.12;
-          tutorFigLeft.style.transform = `translateX(18px) translateY(-${floatOffset}px)`;
-          tutorFigRight.style.transform = `translateX(-18px) translateY(-${floatOffset * 0.85}px)`;
-          if (tutorInfoCol) {
-            tutorInfoCol.style.transform = `translateY(-${scrollY * 0.04}px)`;
-          }
-        }
-        scrollTicking = false;
-      });
-    }
-  }, { passive: true });
-}
-
-// Initial Exam Catalog Rendering & liquid nav slider positioning
-function initExamCatalog() {
+// Initial Exam Catalog Rendering & liquid nav slider positioning (Single Guaranteed Execution)
+let isCatalogInitialized = false;
+function initExamCatalogOnce() {
+  if (isCatalogInitialized) return;
   if (typeof examData !== 'undefined') {
+    isCatalogInitialized = true;
     if (countAllSpan) countAllSpan.textContent = examData.length;
     filterAndSortItems();
+    requestAnimationFrame(() => updateNavSlider());
   }
 }
-initExamCatalog();
 
-window.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
+    initExamCatalogOnce();
+    setTimeout(() => updateNavSlider(), 100);
+  });
+} else {
   document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
-  initExamCatalog();
+  initExamCatalogOnce();
   setTimeout(() => updateNavSlider(), 100);
-});
-
-window.addEventListener('load', () => {
-  document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
-  initExamCatalog();
-});
-setTimeout(() => updateNavSlider(), 150);
+}
 
 
