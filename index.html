@@ -93,6 +93,9 @@
           <button class="nav-btn active" data-nav-target="home">
             <span>🏠 หน้าแรกติวเตอร์</span>
           </button>
+          <button class="nav-btn" data-nav-target="checklist">
+            <span>📋 เช็กลิสต์ & วิเคราะห์</span>
+          </button>
           <button class="nav-btn" data-category="all" data-nav-target="exams">
             <span>📚 คลังข้อสอบทั้งหมด</span>
           </button>
@@ -169,6 +172,11 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               <span>ประวัติเปิดอ่านล่าสุด</span>
               <span class="item-count-badge" id="dropdownHistoryCount">0</span>
+            </button>
+            <button class="dropdown-action-item" id="menuMyChecklist">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              <span>ความพร้อมเก็บเนื้อหา</span>
+              <span class="item-count-badge" id="dropdownChecklistCount">0%</span>
             </button>
             <div class="dropdown-sep"></div>
             <button class="dropdown-action-item logout" id="logoutBtn">
@@ -311,6 +319,109 @@
     </section>
 
     <!-- ======================================================================
+         SYLLABUS CHECKLIST & READINESS ANALYZER SECTION (120 FPS Zero-Lag)
+         ====================================================================== -->
+    <section class="syllabus-checklist-section reveal-on-scroll" id="checklistSection">
+      <div class="checklist-container">
+        <!-- Header Strip -->
+        <div class="checklist-header-card">
+          <div class="chk-badge-pill">📋 ระบบวิเคราะห์ความพร้อม & เช็กลิสต์เก็บเนื้อหา</div>
+          <h2 class="chk-main-title">ประเมินความพร้อมสอบ: เราเก็บเนื้อหาครบแล้วหรือยัง?</h2>
+          <p class="chk-subtitle">
+            ติ๊กเลือกหัวข้อที่อ่านทบทวนหรือฝึกทำโจทย์แล้ว ระบบจะคำนวณเปอร์เซ็นต์ความพร้อม วิเคราะห์จุดอ่อน และแนะนำหัวข้อสำคัญที่ต้องเร่งเก็บให้แบบเรียลไทม์ ลื่นไหลทั้งบนมือถือและคอม
+          </p>
+
+          <!-- Track Selector (สลับสนามสอบเป้าหมาย) -->
+          <div class="chk-track-selector">
+            <span class="track-label">🎯 เลือกสนามสอบเป้าหมาย:</span>
+            <div class="track-buttons-wrap">
+              <button type="button" class="btn-track active" data-track="all">🌟 ทุกสนามสอบ (รวม 40 หัวข้อ)</button>
+              <button type="button" class="btn-track" data-track="afaps">🎖️ เตรียมทหาร 4 เหล่า</button>
+              <button type="button" class="btn-track" data-track="mtts">⚙️ ช่างฝีมือทหาร</button>
+              <button type="button" class="btn-track" data-track="tu">🏫 เตรียมอุดมฯ / ม.4 รร.ดัง</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analyzer Dashboard Grid -->
+        <div class="chk-analytics-dashboard">
+          <!-- Card 1: Overall Progress Ring & Tier -->
+          <div class="chk-card chk-overall-card">
+            <div class="overall-progress-shell">
+              <div class="overall-circle-meter">
+                <svg class="radial-gauge-svg" viewBox="0 0 100 100">
+                  <circle class="gauge-bg" cx="50" cy="50" r="42" fill="none" stroke-width="8" />
+                  <circle class="gauge-fill" id="chkGaugeCircle" cx="50" cy="50" r="42" fill="none" stroke-width="8" stroke-dasharray="263.89" stroke-dashoffset="263.89" stroke-linecap="round" />
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="circle-percent-val" id="chkTotalPercent">0%</span>
+                  <span class="circle-percent-label">ความพร้อม</span>
+                </div>
+              </div>
+              <div class="overall-meta">
+                <div class="readiness-tier-pill" id="chkReadinessTier">🌱 กำลังเริ่มต้น (Beginner)</div>
+                <div class="readiness-count-stat" id="chkCompletedCount">เก็บแล้ว 0 จาก 40 หัวข้อ</div>
+                <div class="readiness-sub-advice" id="chkAdviceText">เริ่มต้นติ๊กหัวข้อที่คุณอ่านจบแล้ว เพื่อดูการวิเคราะห์จุดแข็ง-จุดอ่อนได้ทันที!</div>
+              </div>
+            </div>
+
+            <div class="chk-quick-actions">
+              <button type="button" class="chk-action-btn" id="chkCheckAllBtn" title="ทำเครื่องหมายทุกหัวข้อในสายนี้">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>ติ๊กครบทั้งหมด</span>
+              </button>
+              <button type="button" class="chk-action-btn secondary" id="chkResetBtn" title="ล้างค่าใหม่">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                <span>ล้างค่า</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Subject Breakdown Bars -->
+          <div class="chk-card chk-subjects-card">
+            <h3 class="chk-card-title">📊 ความพร้อมแยกรายวิชา (5 หมวดหลัก)</h3>
+            <div class="subject-bars-list" id="chkSubjectBarsList">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Card 3: Priority Recommendation / Missing High-Yield Topics -->
+          <div class="chk-card chk-recommend-card">
+            <h3 class="chk-card-title">🔥 หัวข้อออกสอบบ่อยที่แนะนำให้เก็บด่วน (High-Yield Focus)</h3>
+            <div class="recommend-box" id="chkRecommendBox">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic Checklist Filter Bar -->
+        <div class="chk-list-controls">
+          <!-- Subject Filter Tabs -->
+          <div class="chk-subject-chips" id="chkSubjectFilterTabs">
+            <button type="button" class="chk-sub-chip active" data-sub="all">ทั้งหมด (<span id="countChkAll">40</span>)</button>
+            <button type="button" class="chk-sub-chip" data-sub="คณิต">📐 คณิต (<span id="countChkMath">10</span>)</button>
+            <button type="button" class="chk-sub-chip" data-sub="วิทย์">🔬 วิทย์ (<span id="countChkSci">10</span>)</button>
+            <button type="button" class="chk-sub-chip" data-sub="อังกฤษ">🇬🇧 อังกฤษ (<span id="countChkEng">8</span>)</button>
+            <button type="button" class="chk-sub-chip" data-sub="ไทย">🇹🇭 ไทย (<span id="countChkThai">6</span>)</button>
+            <button type="button" class="chk-sub-chip" data-sub="สังคม">🏛️ สังคม (<span id="countChkSoc">6</span>)</button>
+          </div>
+
+          <!-- Completion Status Filter -->
+          <div class="chk-status-filter">
+            <button type="button" class="chk-status-btn active" data-status="all">ทั้งหมด</button>
+            <button type="button" class="chk-status-btn" data-status="pending">ยังไม่เก็บ</button>
+            <button type="button" class="chk-status-btn" data-status="done">เก็บแล้ว ✓</button>
+          </div>
+        </div>
+
+        <!-- Topic Cards Grid -->
+        <div class="chk-topics-grid" id="chkTopicsGrid">
+          <!-- 40 topics rendered dynamically with zero-lag event delegation -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
          EXAMS CATALOG SECTION
          ====================================================================== -->
     <section class="exam-catalog-section" id="examsSection">
@@ -338,6 +449,18 @@
 
       <!-- Quick Category Picker Hub (Instant Tap on Mobile & Tablet) -->
       <div class="mobile-quick-categories" id="mobileQuickCategories">
+        <!-- Featured Mobile Checklist Banner Button -->
+        <div class="mobile-checklist-banner-btn" id="mobileChecklistBannerBtn" role="button" tabindex="0">
+          <div class="chk-banner-left">
+            <span class="chk-banner-icon">📋</span>
+            <div class="chk-banner-text">
+              <strong>เช็กลิสต์ & วิเคราะห์เก็บเนื้อหา</strong>
+              <small>ประเมินความพร้อมสอบ & เช็คจุดอ่อนเรียลไทม์</small>
+            </div>
+          </div>
+          <span class="chk-banner-badge" id="mobileBannerPercentBadge">0% พร้อม</span>
+        </div>
+
         <div class="quick-cat-header">
           <div class="quick-cat-title">
             <span class="qcat-spark">⚡</span>

@@ -198,21 +198,25 @@ try {
   currentUser = null;
 }
 
-// User Bookmarks and History State
+// User Bookmarks, History and Syllabus Checklist State
 let savedBookmarks = [];
 let readingHistory = [];
+let checkedTopicIds = new Set();
 
 function syncUserLocalData() {
   if (currentUser) {
     savedBookmarks = currentUser.bookmarks || [];
     readingHistory = currentUser.history || [];
+    checkedTopicIds = new Set(currentUser.checklist || []);
   } else {
     try {
       savedBookmarks = JSON.parse(localStorage.getItem('tidpro_guest_bookmarks') || '[]');
       readingHistory = JSON.parse(localStorage.getItem('tidpro_guest_history') || '[]');
+      checkedTopicIds = new Set(JSON.parse(localStorage.getItem('tidpro_checklist_topics') || '[]'));
     } catch (e) {
       savedBookmarks = [];
       readingHistory = [];
+      checkedTopicIds = new Set();
     }
   }
 }
@@ -221,6 +225,7 @@ function persistUserData() {
   if (currentUser) {
     currentUser.bookmarks = savedBookmarks;
     currentUser.history = readingHistory;
+    currentUser.checklist = Array.from(checkedTopicIds);
     localStorage.setItem('tidpro_current_user', JSON.stringify(currentUser));
     
     // Sync into global user accounts list
@@ -233,6 +238,7 @@ function persistUserData() {
   } else {
     localStorage.setItem('tidpro_guest_bookmarks', JSON.stringify(savedBookmarks));
     localStorage.setItem('tidpro_guest_history', JSON.stringify(readingHistory));
+    localStorage.setItem('tidpro_checklist_topics', JSON.stringify(Array.from(checkedTopicIds)));
   }
 }
 
@@ -1055,12 +1061,22 @@ function goToHome() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function goToChecklist() {
+  desktopNavBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.navTarget === 'checklist');
+  });
+  updateNavSlider();
+  scrollToSection('checklistSection');
+}
+
 // Navigation Bar Button Click, Center Align & Gliding Hover
 desktopNavBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     const target = btn.dataset.navTarget;
     if (target === 'home') {
       goToHome();
+    } else if (target === 'checklist') {
+      goToChecklist();
     } else {
       const cat = btn.dataset.category || 'all';
       setCategory(cat, true, 'examsSection');
@@ -1301,12 +1317,770 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
     initExamCatalogOnce();
+    initChecklist();
     setTimeout(() => updateNavSlider(), 100);
   });
 } else {
   document.querySelectorAll('.reveal-on-scroll').forEach(el => el.classList.add('revealed'));
   initExamCatalogOnce();
+  initChecklist();
   setTimeout(() => updateNavSlider(), 100);
+}
+
+// ==========================================================================
+// 11. Syllabus Checklist & Real-Time Readiness Analyzer (Zero-Lag 120 FPS)
+// ==========================================================================
+const SYLLABUS_TOPICS = [
+  // --- คณิตศาสตร์ (Math) ---
+  {
+    id: 'math_algebra',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'พีชคณิต & การแยกตัวประกอบพหุนาม',
+    desc: 'สมการกำลังสอง, กำลังสาม, ผลต่างกำลังสอง, การแก้สมการและอสมการพหุนาม',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'พีชคณิต'
+  },
+  {
+    id: 'math_linear_system',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'ระบบสมการเชิงเส้นสองตัวแปร',
+    desc: 'โจทย์ปัญหาระบบสมการ, อัตราเร็ว, การทำงานร่วมกัน, กำไร-ขาดทุน และร้อยละ',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'สมการ'
+  },
+  {
+    id: 'math_pythagoras_trig',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'ทฤษฎีพีทาโกรัส & ตรีโกณมิติพื้นฐาน',
+    desc: 'sin, cos, tan, มุมก้ม-มุมเงย, การหาระยะทางและความสูงประยุกต์',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'ตรีโกณ'
+  },
+  {
+    id: 'math_geometry_circle',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'เรขาคณิต & ทฤษฎีบทวงกลม',
+    desc: 'มุมในส่วนโค้งของวงกลม, คอร์ด, เส้นสัมผัส, สามเหลี่ยมคล้าย และเส้นขนาน',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'เรขาคณิต'
+  },
+  {
+    id: 'math_mensuration',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'พื้นที่ผิวและปริมาตร',
+    desc: 'ปริซึม, ทรงกระบอก, พีระมิด, กรวยกลม, ทรงกลม และการคำนวณพื้นที่รูปผสม',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'ปริมาตร'
+  },
+  {
+    id: 'math_probability',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'ความน่าจะเป็น & กฎการนับเบื้องต้น',
+    desc: 'Sample space, เหตุการณ์, การโยนลูกเต๋า, หยิบลูกบอล, หยิบไพ่, แผนภาพต้นไม้',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'ความน่าจะเป็น'
+  },
+  {
+    id: 'math_statistics',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'สถิติข้อมูลและการวิเคราะห์',
+    desc: 'ค่าเฉลี่ยเลขคณิต, มัธยฐาน, ฐานนิยม, พิสัย, ควอร์ไทล์ และแผนภาพกล่อง',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'สถิติ'
+  },
+  {
+    id: 'math_number_theory',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'ทฤษฎีจำนวน & ห.ร.ม. / ค.ร.น.',
+    desc: 'การหารลงตัว, จำนวนเฉพาะ, เลขยกกำลัง, สัญกรณ์วิทยาศาสตร์ และรากที่สอง/สาม',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'จำนวน'
+  },
+  {
+    id: 'math_linear_graph',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'กราฟและความสัมพันธ์เชิงเส้น',
+    desc: 'ความชัน (Slope), จุดตัดแกน X-Y, การขนานและตั้งฉากของเส้นตรง',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts'],
+    searchQuery: 'กราฟ'
+  },
+  {
+    id: 'math_parabola',
+    subject: 'คณิต',
+    subjectName: 'คณิตศาสตร์',
+    title: 'พาราโบลา & ฟังก์ชันกำลังสอง',
+    desc: 'กราฟพาราโบลา, จุดยอด (h,k), จุดสูงสุด/ต่ำสุด, แกนสมมาตร และการประยุกต์',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'พาราโบลา'
+  },
+
+  // --- วิทยาศาสตร์ (Science) ---
+  {
+    id: 'sci_motion_forces',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ฟิสิกส์)',
+    title: 'การเคลื่อนที่แนวตรง & กฎนิวตัน',
+    desc: 'ระยะทาง การกระจัด อัตราเร็ว ความเร็ว ความเร่ง และกฎการเคลื่อนที่ 3 ข้อของนิวตัน',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'การเคลื่อนที่'
+  },
+  {
+    id: 'sci_work_energy',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ฟิสิกส์)',
+    title: 'งาน พลังงาน และกำลัง (Work & Energy)',
+    desc: 'W = Fs, พลังงานจลน์ Ek, พลังงานศักย์ Ep, กฎการอนุรักษ์พลังงาน และกำลัง P = W/t',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'พลังงาน'
+  },
+  {
+    id: 'sci_simple_machines',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ฟิสิกส์)',
+    title: 'เครื่องกลอย่างง่าย & โมเมนต์ของแรง',
+    desc: 'คาน (โมเมนต์ตาม = ทวน), รอกเดี่ยวตายตัว/เคลื่อนที่, พื้นเอียง, ล้อและเพลา, ประสิทธิภาพเครื่องกล',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts'],
+    searchQuery: 'เครื่องกล'
+  },
+  {
+    id: 'sci_electricity',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ฟิสิกส์)',
+    title: 'วงจรไฟฟ้า & พลังงานไฟฟ้า (Circuits)',
+    desc: 'กฎของโอห์ม V=IR, วงจรอนุกรม-ขนาน, กำลังไฟฟ้า P=VI และการคิดค่าไฟฟ้าในบ้าน',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'ไฟฟ้า'
+  },
+  {
+    id: 'sci_light_optics',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ฟิสิกส์)',
+    title: 'แสง การสะท้อน และการหักเห',
+    desc: 'กระจกเงาราบ/เว้า/นูน, เลนส์นูน/เว้า, ภาพจริง-ภาพเสมือน และการคำนวณ 1/f = 1/s + 1/s\'',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'แสง'
+  },
+  {
+    id: 'sci_matter_properties',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (เคมี)',
+    title: 'สารและสมบัติของสาร',
+    desc: 'สถานะของสาร, สารบริสุทธิ์ vs สารผสม, ธาตุและสารประกอบ, ความเข้มข้นสารละลาย',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'สารประกอบ'
+  },
+  {
+    id: 'sci_chemical_reactions',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (เคมี)',
+    title: 'การแยกสาร & ปฏิกิริยาเคมี',
+    desc: 'การกรอง, การกลั่น, โครมาโทกราฟี, ปฏิกิริยาเผาไหม้, กรด-เบส, ปฏิกิริยาเกิดสนิม',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'เคมี'
+  },
+  {
+    id: 'sci_cells_life',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ชีววิทยา)',
+    title: 'เซลล์และกระบวนการดำรงชีวิตของพืช',
+    desc: 'ออร์แกเนลล์เซลล์พืช-สัตว์, การสังเคราะห์ด้วยแสง, การลำเลียงไซเลม-โฟลเอ็ม, การคายน้ำ',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'เซลล์'
+  },
+  {
+    id: 'sci_human_body',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ชีววิทยา)',
+    title: 'ระบบร่างกายมนุษย์',
+    desc: 'ระบบหมุนเวียนเลือดและหัวใจ, ระบบหายใจ, ระบบย่อยอาหารและเอนไซม์, ระบบขับถ่าย',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'ชีววิทยา'
+  },
+  {
+    id: 'sci_genetics_eco',
+    subject: 'วิทย์',
+    subjectName: 'วิทยาศาสตร์ (ชีววิทยา)',
+    title: 'พันธุศาสตร์และระบบนิเวศ',
+    desc: 'ดีเอ็นเอ โครโมโซม กฎของเมนเดล, การถ่ายทอดลักษณะ, สายใยอาหาร และความสัมพันธ์สิ่งมีชีวิต',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'พันธุศาสตร์'
+  },
+
+  // --- ภาษาอังกฤษ (English) ---
+  {
+    id: 'eng_tenses',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Tenses ทั้ง 12 & Subject-Verb Agreement',
+    desc: 'Present/Past/Future Simple, Continuous, Perfect และการผันกริยาตามประธานเอกพจน์/พหูพจน์',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'Grammar'
+  },
+  {
+    id: 'eng_passive_voice',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Passive Voice & Relative Pronouns',
+    desc: 'รูปประโยคถูกกระทำ (S + be + V.3) และการใช้ Who, Whom, Whose, Which, That ขยายคำนาม',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'Passive'
+  },
+  {
+    id: 'eng_conditionals',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Conditional Sentences (If-Clause Type 0, 1, 2, 3)',
+    desc: 'ประโยคเงื่อนไขสมมติทุกโครงสร้าง, Wish clause และการกลับโครงสร้าง (Inversion)',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'Conditional'
+  },
+  {
+    id: 'eng_parts_of_speech',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Parts of Speech & Word Formation',
+    desc: 'Noun, Verb, Adjective, Adverb, Prefix, Suffix และการวิเคราะห์หน้าที่ของคำในประโยค',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'English'
+  },
+  {
+    id: 'eng_vocabulary',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Essential Vocabulary, Synonyms & Antonyms',
+    desc: 'คำศัพท์สำคัญที่พบบ่อยในข้อสอบเตรียมทหารและเตรียมอุดมฯ, คำความหมายเหมือน-ตรงข้าม',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'Vocab'
+  },
+  {
+    id: 'eng_reading_comprehension',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Reading Comprehension (การอ่านบทความ)',
+    desc: 'เทคนิค Skimming & Scanning, การหา Main Idea, Inference และ Reference ในเนื้อเรื่อง',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'Reading'
+  },
+  {
+    id: 'eng_conversation',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Conversations & Situational Dialogues',
+    desc: 'บทสนทนาสถานการณ์ในชีวิตประจำวัน, สำนวนภาษาอังกฤษ (Idioms) ที่ออกข้อสอบบ่อย',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'Conversation'
+  },
+  {
+    id: 'eng_error_detection',
+    subject: 'อังกฤษ',
+    subjectName: 'ภาษาอังกฤษ',
+    title: 'Error Identification & Sentence Correction',
+    desc: 'การจับจุดผิดทางไวยากรณ์ในประโยค ข้อสอบคัดเลือกเข้าเตรียมอุดมและเตรียมทหาร',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'Error'
+  },
+
+  // --- ภาษาไทย (Thai) ---
+  {
+    id: 'thai_phonetics_tones',
+    subject: 'ไทย',
+    subjectName: 'ภาษาไทย',
+    title: 'ไตรยางศ์ (อักษรสามหมู่) & คำเป็น-คำตาย',
+    desc: 'การผันวรรณยุกต์, เสียงพยัญชนะต้น-ท้าย, สระสั้น-ยาว และลักษณะคำเป็นคำตาย',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'ไทย'
+  },
+  {
+    id: 'thai_word_formation',
+    subject: 'ไทย',
+    subjectName: 'ภาษาไทย',
+    title: 'การสร้างคำ (คำมูล คำประสม คำซ้อน คำสมาส-สนธิ)',
+    desc: 'หลักการสังเกตคำสมาสสนธิแบบบาลี-สันสกฤต, คำแผลง และคำยืมภาษาต่างประเทศ',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'สมาส'
+  },
+  {
+    id: 'thai_sentence_syntax',
+    subject: 'ไทย',
+    subjectName: 'ภาษาไทย',
+    title: 'ชนิดของประโยค & ระดับภาษา',
+    desc: 'ประโยคความเดียว, ความรวม, ความซ้อน, ประโยคกำกวม และระดับภาษาทางการ-กึ่งทางการ',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'ประโยค'
+  },
+  {
+    id: 'thai_idioms_royalty',
+    subject: 'ไทย',
+    subjectName: 'ภาษาไทย',
+    title: 'สำนวน สุภาษิต คำพังเพย & คำราชาศัพท์',
+    desc: 'สำนวนไทยเปรียบเทียบ, คำสุภาพ, หมวดหมู่คำราชาศัพท์ที่พบบ่อยในข้อสอบ',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'สำนวน'
+  },
+  {
+    id: 'thai_reading_comprehension',
+    subject: 'ไทย',
+    subjectName: 'ภาษาไทย',
+    title: 'การอ่านจับใจความสำคัญ & สรุปความ',
+    desc: 'การหาใจความสำคัญ (ตอนต้น ตอนกลาง ตอนท้าย), การตีความ และการจับเจตนาผู้เขียน',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'จับใจความ'
+  },
+  {
+    id: 'thai_literary_arts',
+    subject: 'ไทย',
+    subjectName: 'ภาษาไทย',
+    title: 'วรรณศิลป์ & โวหารภาพพจน์',
+    desc: 'อุปมา, อุปลักษณ์, สัทพจน์, บุคลาธิษฐาน, อติพจน์ และรสวรรณคดีไทย',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'วรรณคดี'
+  },
+
+  // --- สังคมศึกษา (Social Studies) ---
+  {
+    id: 'soc_civics_law',
+    subject: 'สังคม',
+    subjectName: 'สังคมศึกษา',
+    title: 'หน้าที่พลเมือง รัฐธรรมนูญ & กฎหมายพื้นฐาน',
+    desc: 'การปกครองระบอบประชาธิปไตย, สิทธิมนุษยชน, กฎหมายแพ่ง (นิติกรรม/ครอบครัว) และกฎหมายอาญา',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'กฎหมาย'
+  },
+  {
+    id: 'soc_thai_history',
+    subject: 'สังคม',
+    subjectName: 'สังคมศึกษา',
+    title: 'ประวัติศาสตร์ชาติไทย (สุโขทัย-อยุธยา-รัตนโกสินทร์)',
+    desc: 'การสถาปนาราชธานี, วีรชนและบุคคลสำคัญ, การปฏิรูปการปกครอง ร.5, การเปลี่ยนแปลงการปกครอง 2475',
+    stars: 3,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'ประวัติศาสตร์'
+  },
+  {
+    id: 'soc_geography_env',
+    subject: 'สังคม',
+    subjectName: 'สังคมศึกษา',
+    title: 'ภูมิศาสตร์ แผนที่ & สิ่งแวดล้อม',
+    desc: 'พิกัดภูมิศาสตร์ (Latitude/Longitude), เวลาโลก, ภูมิศาสตร์กายภาพของไทย, ภัยธรรมชาติและการอนุรักษ์',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'mtts', 'tu'],
+    searchQuery: 'ภูมิศาสตร์'
+  },
+  {
+    id: 'soc_economics',
+    subject: 'สังคม',
+    subjectName: 'สังคมศึกษา',
+    title: 'เศรษฐศาสตร์เบื้องต้น & เศรษฐกิจพอเพียง',
+    desc: 'กลไกราคา (อุปสงค์-อุปทาน), เงินเฟ้อ-เงินฝืด, การค้าระหว่างประเทศ และปรัชญาเศรษฐกิจพอเพียง',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'เศรษฐศาสตร์'
+  },
+  {
+    id: 'soc_religions_ethics',
+    subject: 'สังคม',
+    subjectName: 'สังคมศึกษา',
+    title: 'ศาสนา ศีลธรรม และหลักธรรมสากล',
+    desc: 'อริยสัจ 4, มรรค 8, ไตรลักษณ์, พุทธประวัติ, วันสำคัญทางพุทธศาสนา และศาสนาเปรียบเทียบ',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'ศาสนา'
+  },
+  {
+    id: 'soc_current_world',
+    subject: 'สังคม',
+    subjectName: 'สังคมศึกษา',
+    title: 'เหตุการณ์ปัจจุบัน & ความร่วมมือระหว่างประเทศ',
+    desc: 'ประชาคมอาเซียน (ASEAN), องค์การสหประชาชาติ (UN), ประเด็นสิ่งแวดล้อมโลก (SDGs)',
+    stars: 2,
+    examTrack: ['all', 'afaps', 'tu'],
+    searchQuery: 'สังคม'
+  }
+];
+
+let currentTrack = 'all';
+let currentChkSubject = 'all';
+let currentChkStatus = 'all';
+
+function getFilteredTopicsByTrack(track) {
+  if (!track || track === 'all') return SYLLABUS_TOPICS;
+  return SYLLABUS_TOPICS.filter(t => t.examTrack.includes(track));
+}
+
+function updateChecklistAnalytics() {
+  const trackTopics = getFilteredTopicsByTrack(currentTrack);
+  const totalInTrack = trackTopics.length;
+  const completedInTrack = trackTopics.filter(t => checkedTopicIds.has(t.id)).length;
+  const totalPercent = totalInTrack > 0 ? Math.round((completedInTrack / totalInTrack) * 100) : 0;
+
+  // 1. Gauge Circle & Overall Stats
+  const gaugeCircle = document.getElementById('chkGaugeCircle');
+  const percentText = document.getElementById('chkTotalPercent');
+  const tierPill = document.getElementById('chkReadinessTier');
+  const countStat = document.getElementById('chkCompletedCount');
+  const adviceText = document.getElementById('chkAdviceText');
+  const dropdownCount = document.getElementById('dropdownChecklistCount');
+  const mobileBannerBadge = document.getElementById('mobileBannerPercentBadge');
+
+  if (percentText) percentText.textContent = `${totalPercent}%`;
+  if (dropdownCount) dropdownCount.textContent = `${totalPercent}%`;
+  if (mobileBannerBadge) mobileBannerBadge.textContent = `${totalPercent}% พร้อม`;
+
+  if (gaugeCircle) {
+    const circumference = 263.89; // 2 * PI * 42
+    const offset = circumference - (circumference * totalPercent) / 100;
+    gaugeCircle.style.strokeDashoffset = offset;
+  }
+
+  if (countStat) {
+    countStat.textContent = `เก็บแล้ว ${completedInTrack} จาก ${totalInTrack} หัวข้อ`;
+  }
+
+  // Tier info & advice
+  if (tierPill && adviceText) {
+    if (totalPercent >= 80) {
+      tierPill.textContent = '👑 ระดับเซียนพร้อมสอบ (Mastery)';
+      tierPill.style.background = 'rgba(5, 150, 105, 0.15)';
+      tierPill.style.color = '#059669';
+      tierPill.style.borderColor = 'rgba(5, 150, 105, 0.4)';
+      adviceText.textContent = 'ฟิตเต็มร้อยพร้อมลงสนามจริง! ให้เน้นจับเวลาทำข้อสอบฉบับจริงย้อนหลังเพื่อเร่งสปีดความเร็วและความแม่นยำ';
+    } else if (totalPercent >= 55) {
+      tierPill.textContent = '🔥 ลุยโค้งสำคัญ (Exam Ready)';
+      tierPill.style.background = 'rgba(217, 119, 6, 0.15)';
+      tierPill.style.color = '#d97706';
+      tierPill.style.borderColor = 'rgba(217, 119, 6, 0.4)';
+      adviceText.textContent = 'เยี่ยมมาก! เก็บเนื้อหาเกินครึ่งแล้ว เร่งเก็บหัวข้อ 3 ดาว (⭐⭐⭐) ที่ยังค้างอยู่เพื่ออุดจุดอ่อนทั้งหมด';
+    } else if (totalPercent >= 25) {
+      tierPill.textContent = '⚡ กำลังสะสมพลัง (Developing)';
+      tierPill.style.background = 'rgba(37, 99, 235, 0.15)';
+      tierPill.style.color = '#2563eb';
+      tierPill.style.borderColor = 'rgba(37, 99, 235, 0.4)';
+      adviceText.textContent = 'ก้าวหน้าไปได้ดีมาก! เริ่มนำหัวข้อที่อ่านจบแล้วมาฝึกทำข้อสอบเก่ารายวิชาเพื่อเช็คความเข้าใจ';
+    } else {
+      tierPill.textContent = '🌱 กำลังเริ่มต้น (Beginner)';
+      tierPill.style.background = 'var(--accent-study-soft)';
+      tierPill.style.color = 'var(--accent-study)';
+      tierPill.style.borderColor = 'var(--accent-study-border)';
+      adviceText.textContent = 'เริ่มต้นติ๊กหัวข้อที่คุณอ่านจบแล้ว ระบบจะคำนวณความพร้อมและแนะนำหัวข้อออกบ่อยให้ทันที!';
+    }
+  }
+
+  // 2. Subject Breakdown Bars
+  const subjectListContainer = document.getElementById('chkSubjectBarsList');
+  if (subjectListContainer) {
+    const subjectsMeta = [
+      { code: 'คณิต', name: 'คณิตศาสตร์ (Math)', fillClass: 'fill-math', icon: '📐' },
+      { code: 'วิทย์', name: 'วิทยาศาสตร์ (Science)', fillClass: 'fill-sci', icon: '🔬' },
+      { code: 'อังกฤษ', name: 'ภาษาอังกฤษ (English)', fillClass: 'fill-eng', icon: '🇬🇧' },
+      { code: 'ไทย', name: 'ภาษาไทย (Thai)', fillClass: 'fill-thai', icon: '🇹🇭' },
+      { code: 'สังคม', name: 'สังคมศึกษา (Social)', fillClass: 'fill-soc', icon: '🏛️' }
+    ];
+
+    subjectListContainer.innerHTML = subjectsMeta.map(sub => {
+      const subTopics = trackTopics.filter(t => t.subject === sub.code);
+      const subDone = subTopics.filter(t => checkedTopicIds.has(t.id)).length;
+      const subTotal = subTopics.length;
+      const subPct = subTotal > 0 ? Math.round((subDone / subTotal) * 100) : 0;
+
+      return `
+        <div class="subject-bar-item">
+          <div class="subject-bar-info">
+            <span class="subject-bar-title">${sub.icon} ${sub.name}</span>
+            <span class="subject-bar-stat">${subDone}/${subTotal} (${subPct}%)</span>
+          </div>
+          <div class="subject-progress-track">
+            <div class="subject-progress-fill ${sub.fillClass}" style="width: ${subPct}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 3. High-Yield Missing Recommendations
+  const recommendBox = document.getElementById('chkRecommendBox');
+  if (recommendBox) {
+    const missingHighYield = trackTopics.filter(t => t.stars === 3 && !checkedTopicIds.has(t.id));
+
+    if (missingHighYield.length === 0) {
+      recommendBox.innerHTML = `
+        <div class="rec-completed-state">
+          <span>🎉</span>
+          <span>สุดยอดมาก! คุณเก็บหัวข้อสำคัญออกสอบบ่อย (⭐⭐⭐) ครบทั้งหมดแล้ว!</span>
+        </div>
+      `;
+    } else {
+      const topPicks = missingHighYield.slice(0, 3);
+      recommendBox.innerHTML = topPicks.map(item => `
+        <div class="rec-item">
+          <div class="rec-info">
+            <div class="rec-badge">🔥 เร่งเก็บด่วน (ออกสอบบ่อยมาก)</div>
+            <div class="rec-title">${item.title}</div>
+          </div>
+          <button type="button" class="rec-btn-search" data-search="${item.searchQuery}" title="ค้นหาข้อสอบเรื่องนี้">
+            ฝึกทำข้อสอบ &rarr;
+          </button>
+        </div>
+      `).join('');
+
+      recommendBox.querySelectorAll('.rec-btn-search').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          searchExamTopic(btn.dataset.search);
+        });
+      });
+    }
+  }
+
+  // 4. Update Category Chip Counters
+  const countChkAll = document.getElementById('countChkAll');
+  const countChkMath = document.getElementById('countChkMath');
+  const countChkSci = document.getElementById('countChkSci');
+  const countChkEng = document.getElementById('countChkEng');
+  const countChkThai = document.getElementById('countChkThai');
+  const countChkSoc = document.getElementById('countChkSoc');
+
+  if (countChkAll) countChkAll.textContent = trackTopics.length;
+  if (countChkMath) countChkMath.textContent = trackTopics.filter(t => t.subject === 'คณิต').length;
+  if (countChkSci) countChkSci.textContent = trackTopics.filter(t => t.subject === 'วิทย์').length;
+  if (countChkEng) countChkEng.textContent = trackTopics.filter(t => t.subject === 'อังกฤษ').length;
+  if (countChkThai) countChkThai.textContent = trackTopics.filter(t => t.subject === 'ไทย').length;
+  if (countChkSoc) countChkSoc.textContent = trackTopics.filter(t => t.subject === 'สังคม').length;
+}
+
+function renderChecklistTopics() {
+  const grid = document.getElementById('chkTopicsGrid');
+  if (!grid) return;
+
+  const trackTopics = getFilteredTopicsByTrack(currentTrack);
+
+  const displayTopics = trackTopics.filter(item => {
+    // Subject filter
+    if (currentChkSubject !== 'all' && item.subject !== currentChkSubject) return false;
+    // Status filter
+    const isDone = checkedTopicIds.has(item.id);
+    if (currentChkStatus === 'pending' && isDone) return false;
+    if (currentChkStatus === 'done' && !isDone) return false;
+    return true;
+  });
+
+  if (displayTopics.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 36px 16px; color: var(--text-muted);">
+        <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">ไม่พบหัวข้อในตัวกรองนี้</p>
+        <p style="font-size: 0.85rem;">ลองสลับตัวกรองสถานะ หรือเปลี่ยนหมวดวิชาดูนะครับ</p>
+      </div>
+    `;
+    return;
+  }
+
+  const badgeClasses = {
+    'คณิต': 'badge-math',
+    'วิทย์': 'badge-sci',
+    'อังกฤษ': 'badge-eng',
+    'ไทย': 'badge-thai',
+    'สังคม': 'badge-soc'
+  };
+
+  grid.innerHTML = displayTopics.map(item => {
+    const isChecked = checkedTopicIds.has(item.id);
+    const starString = '⭐'.repeat(item.stars);
+    const badgeCls = badgeClasses[item.subject] || 'badge-math';
+
+    return `
+      <div class="chk-topic-card ${isChecked ? 'is-checked' : ''}" data-topic-id="${item.id}">
+        <div class="chk-box-custom">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div class="chk-topic-content">
+          <div class="chk-topic-header">
+            <span class="chk-topic-sub-badge ${badgeCls}">${item.subjectName}</span>
+            <span class="chk-topic-stars" title="ระดับความสำคัญ">${starString}</span>
+          </div>
+          <h4 class="chk-topic-title">${item.title}</h4>
+          <p class="chk-topic-desc">${item.desc}</p>
+          <button type="button" class="chk-btn-practice" data-search="${item.searchQuery}">
+            <span>🎯 ฝึกทำข้อสอบเรื่องนี้</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleTopic(topicId) {
+  if (checkedTopicIds.has(topicId)) {
+    checkedTopicIds.delete(topicId);
+    showToast('ลบเครื่องหมายหัวข้อออกแล้ว');
+  } else {
+    checkedTopicIds.add(topicId);
+    const item = SYLLABUS_TOPICS.find(t => t.id === topicId);
+    const title = item ? item.title : 'หัวข้อ';
+    showToast(`✓ เก็บเนื้อหา "${title}" สำเร็จ!`);
+  }
+
+  persistUserData();
+  updateChecklistAnalytics();
+
+  // Surgical DOM update of the card
+  const card = document.querySelector(`.chk-topic-card[data-topic-id="${topicId}"]`);
+  if (card) {
+    card.classList.toggle('is-checked', checkedTopicIds.has(topicId));
+    if (currentChkStatus !== 'all') {
+      renderChecklistTopics();
+    }
+  }
+}
+
+function searchExamTopic(query) {
+  if (!query) return;
+  setCategory('all', false);
+  if (searchInput) {
+    searchInput.value = query;
+    clearSearchBtn.classList.add('active');
+  }
+  filterAndSortItems();
+  scrollToSection('examsSection');
+  showToast(`🔍 แสดงข้อสอบที่เกี่ยวกับ "${query}"`);
+}
+
+function initChecklist() {
+  const grid = document.getElementById('chkTopicsGrid');
+  if (!grid) return;
+
+  // 1. Event Delegation for Checklist Topics Grid
+  grid.addEventListener('click', (e) => {
+    // If clicked practice button
+    const practiceBtn = e.target.closest('.chk-btn-practice');
+    if (practiceBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      searchExamTopic(practiceBtn.dataset.search);
+      return;
+    }
+
+    // If clicked anywhere on card
+    const card = e.target.closest('.chk-topic-card');
+    if (card && card.dataset.topicId) {
+      toggleTopic(card.dataset.topicId);
+    }
+  });
+
+  // 2. Track Selector Buttons
+  const trackBtns = document.querySelectorAll('.btn-track');
+  trackBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      trackBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTrack = btn.dataset.track || 'all';
+      updateChecklistAnalytics();
+      renderChecklistTopics();
+    });
+  });
+
+  // 3. Subject Chips Filter
+  const subChips = document.querySelectorAll('.chk-sub-chip');
+  subChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      subChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentChkSubject = chip.dataset.sub || 'all';
+      renderChecklistTopics();
+    });
+  });
+
+  // 4. Status Filter Buttons
+  const statusBtns = document.querySelectorAll('.chk-status-btn');
+  statusBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      statusBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentChkStatus = btn.dataset.status || 'all';
+      renderChecklistTopics();
+    });
+  });
+
+  // 5. Check All Action Button
+  const checkAllBtn = document.getElementById('chkCheckAllBtn');
+  if (checkAllBtn) {
+    checkAllBtn.addEventListener('click', () => {
+      const trackTopics = getFilteredTopicsByTrack(currentTrack);
+      trackTopics.forEach(t => checkedTopicIds.add(t.id));
+      persistUserData();
+      updateChecklistAnalytics();
+      renderChecklistTopics();
+      showToast('🎉 ทำเครื่องหมายครบทุกหัวข้อในสายนี้แล้ว!');
+    });
+  }
+
+  // 6. Reset Action Button
+  const resetBtn = document.getElementById('chkResetBtn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      const trackTopics = getFilteredTopicsByTrack(currentTrack);
+      trackTopics.forEach(t => checkedTopicIds.delete(t.id));
+      persistUserData();
+      updateChecklistAnalytics();
+      renderChecklistTopics();
+      showToast('🔄 รีเซ็ตเช็กลิสต์ในสายนี้เรียบร้อย');
+    });
+  }
+
+  // 7. Mobile Banner Button
+  const mobileBanner = document.getElementById('mobileChecklistBannerBtn');
+  if (mobileBanner) {
+    mobileBanner.addEventListener('click', () => {
+      scrollToSection('checklistSection');
+    });
+  }
+
+  // Initial Render
+  updateChecklistAnalytics();
+  renderChecklistTopics();
 }
 
 
